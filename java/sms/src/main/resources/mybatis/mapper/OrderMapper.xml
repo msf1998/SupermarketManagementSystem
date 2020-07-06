@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mfs.sms.mapper.OrderMapper">
+    <sql id="orderColumn">
+        id,describe,sum,create_time,creator,parent
+    </sql>
+    <sql id="orderUserNumberColumn">
+        o.id,o.describe,o.sum,o.create_time,o.creator,o.parent,n.name as nname,u.name as uname
+    </sql>
+    <resultMap id="order" type="Order">
+        <id column="id" property="id"></id>
+        <result column="describe" property="describe"></result>
+        <result column="sum" property="sum"></result>
+        <result column="create_time" property="createTime"></result>
+        <result property="creatorId" column="creator"></result>
+        <result column="parent" property="parentId"></result>
+        <association property="parent" javaType="User" >
+            <id column="parent" property="id"></id>
+            <result property="name" column="uname"></result>
+        </association>
+        <association property="creator" javaType="Number" >
+            <id column="creator" property="id"></id>
+            <result property="name" column="nname"></result>
+        </association>
+    </resultMap>
+    <insert id="add" parameterType="Order">
+        insert into tb_order(
+        <include refid="orderColumn"></include>
+        ) values(#{id},#{describe},#{sum},#{createTime},#{creatorId},#{parentId})
+    </insert>
+    <delete id="delete" parameterType="Order">
+        delete from tb_order
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="Order">
+        update tb_order
+        <set>
+            <if test="describe != null and describe != ''">
+                `describe` = #{describe},
+            </if>
+            <if test="sum != null">
+                sum = #{sum},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="queryById" parameterType="Integer" resultMap="order">
+        select <include refid="orderUserNumberColumn"></include>
+        from tb_order o,tb_number n,tb_user u
+        where o.id = #{id} and o.parent = u.id; and o.creator = n.id
+    </select>
+    <select id="query" parameterType="Order" resultMap="order">
+        select <include refid="orderUserNumberColumn"></include>
+        from tb_number n,tb_user u,tb_order o
+        <where>
+            <if test="id != null">
+                and o.id = #{id}
+            </if>
+            <if test="describe != null and describe != ''">
+                and o.describe like concat("%",#{describe},"%")
+            </if>
+            <if test="sum != null">
+                and o.sum = #{sum}
+            </if>
+            <if test="creatorId != null and creatorId != ''">
+                and o.creator = #{creatorId}
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and o.parent = #{parentId}
+            </if>
+            and o.parent = u.id
+            and o.creator = n.id
+        </where>
+        <if test="order != null and order != ''">
+            order by o.${order}
+        </if>
+        <if test="page != null">
+            limit #{page},10
+        </if>
+    </select>
+</mapper>

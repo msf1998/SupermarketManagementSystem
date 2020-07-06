@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mfs.sms.mapper.TypeMapper">
+    <sql id="typeColumn">
+        id,name,create_time,parent
+    </sql>
+    <sql id="typeUserColumn">
+        t.id,t.name,t.create_time,t.parent,u.name as uname
+    </sql>
+    <resultMap id="type" type="Type">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="create_time" property="createTime"></result>
+        <result column="parent" property="parentId"></result>
+        <association property="parent" javaType="User" >
+            <id column="parent" property="id"></id>
+            <result property="name" column="uname"></result>
+        </association>
+    </resultMap>
+    <insert id="add" parameterType="Type">
+        insert into tb_type(
+        <include refid="typeColumn"></include>
+        ) values(#{id},#{name},#{createTime},#{parentId})
+    </insert>
+    <delete id="delete" parameterType="Type">
+        delete from tb_type
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="Type">
+        update tb_type
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="queryById" parameterType="Integer" resultMap="type">
+        select <include refid="typeUserColumn"></include>
+        from tb_type t,tb_user u
+        where t.id = #{id} and t.parent = u.id
+    </select>
+    <select id="query" parameterType="Type" resultMap="type">
+        select <include refid="typeUserColumn"></include>
+        from tb_type t,tb_user u
+        <where>
+            <if test="id != null and id != ''">
+                and t.id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and t.name like concat("%",#{name},"%")
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and t.parent = #{parentId}
+            </if>
+            and t.parent = u.id
+        </where>
+        <if test="order != null and order != ''">
+            order by t.${order}
+        </if>
+        <if test="page != null">
+            limit #{page},10
+        </if>
+    </select>
+</mapper>

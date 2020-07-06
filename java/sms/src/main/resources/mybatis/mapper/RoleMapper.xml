@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mfs.sms.mapper.RoleMapper">
+    <sql id="roleColumn">
+        id,name,product_insert,product_delete,product_update,product_select,type_insert,type_delete,type_update,type_select,
+    number_insert,number_delete,number_update,number_select,order_insert,order_delete,order_update,order_select,user_insert,
+    user_delete,user_update,user_select,role_insert,role_delete,role_update,role_select,create_time,parent
+    </sql>
+    <sql id="roleUserColumn">
+        r.id,r.name,r.product_insert,r.product_delete,r.product_update,r.product_select,r.type_insert,r.type_delete,r.type_update,r.type_select,
+    r.number_insert,r.number_delete,r.number_update,r.number_select,r.order_insert,r.order_delete,r.order_update,r.order_select,r.user_insert,
+    r.user_delete,r.user_update,r.user_select,r.role_insert,r.role_delete,r.role_update,r.role_select,r.create_time,r.parent,u.name as uname
+    </sql>
+    <resultMap id="role" type="Role">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="productInsert" column="product_insert"></result>
+        <result property="productDelete" column="product_delete"></result>
+        <result property="productUpdate" column="product_update"></result>
+        <result property="productSelect" column="product_select"></result>
+        <result property="typeInsert" column="type_insert"></result>
+        <result property="typeDelete" column="type_delete"></result>
+        <result property="typeUpdate" column="type_update"></result>
+        <result property="typeSelect" column="type_select"></result>
+        <result property="numberInsert" column="number_insert"></result>
+        <result property="numberDelete" column="number_delete"></result>
+        <result property="numberUpdate" column="number_update"></result>
+        <result property="numberSelect" column="number_select"></result>
+        <result property="orderInsert" column="order_insert"></result>
+        <result property="orderDelete" column="order_delete"></result>
+        <result property="orderUpdate" column="order_update"></result>
+        <result property="orderSelect" column="order_select"></result>
+        <result property="userInsert" column="user_insert"></result>
+        <result property="userDelete" column="user_delete"></result>
+        <result property="userUpdate" column="user_update"></result>
+        <result property="userSelect" column="user_select"></result>
+        <result property="roleInsert" column="role_insert"></result>
+        <result property="roleDelete" column="role_delete"></result>
+        <result property="roleUpdate" column="role_update"></result>
+        <result property="roleSelect" column="role_select"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="parentId" column="parent"></result>
+        <association property="parent" javaType="User">
+            <id property="id" column="parent"></id>
+            <result property="name" column="uname"></result>
+        </association>
+    </resultMap>
+    <insert id="add" parameterType="Role">
+        insert into tb_role(
+        <include refid="roleColumn"></include>
+        ) values(#{id},#{name},#{productInsert},#{productDelete},#{productUpdate},#{productSelect},#{typeInsert},
+        #{typeDelete},#{typeUpdate},#{typeSelect},#{numberInsert},#{numberDelete},#{numberUpdate},#{numberSelect},
+        #{orderInsert},#{orderDelete},#{orderUpdate},#{orderSelect},#{userInsert},#{userDelete},#{userUpdate},#{userSelect},
+        #{roleInsert},#{roleDelete},#{roleUpdate},#{roleSelect},#{createTime},#{parentId})
+    </insert>
+    <delete id="delete" parameterType="Role">
+        delete from tb_role
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="Role">
+        update tb_role
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="productInsert != null">
+                product_insert = #{productInsert},
+            </if>
+            <if test="productDelete != null">
+                product_delete = #{productDelete},
+            </if>
+            <if test="productUpdate != null">
+                product_update = #{productUpdate},
+            </if>
+            <if test="productSelect != null">
+                product_select = #{productSelect},
+            </if>
+            <if test="typeInsert != null">
+                type_insert = #{typeInsert},
+            </if>
+            <if test="typeDelete != null">
+                type_delete = #{typeDelete},
+            </if>
+            <if test="typeUpdate != null">
+                type_update = #{typeUpdate},
+            </if>
+            <if test="typeSelect != null">
+                type_select = #{typeSelect},
+            </if>
+            <if test="numberInsert != null">
+                number_insert = #{numberInsert},
+            </if>
+            <if test="numberDelete != null">
+                number_delete = #{numberDelete},
+            </if>
+            <if test="numberUpdate != null">
+                number_update = #{numberUpdate},
+            </if>
+            <if test="numberSelect != null">
+                number_select = #{numberSelect},
+            </if>
+            <if test="orderInsert != null">
+                order_insert = #{orderInsert},
+            </if>
+            <if test="orderDelete != null">
+                order_delete = #{orderDelete},
+            </if>
+            <if test="orderUpdate != null">
+                order_update = #{orderUpdate},
+            </if>
+            <if test="orderSelect != null">
+                order_select = #{orderSelect},
+            </if>
+            <if test="userInsert != null">
+                user_insert = #{userInsert},
+            </if>
+            <if test="userDelete != null">
+                user_delete = #{userDelete},
+            </if>
+            <if test="userUpdate != null">
+                user_update = #{userUpdate},
+            </if>
+            <if test="userSelect != null">
+                user_select = #{userSelect},
+            </if>
+            <if test="roleInsert != null">
+                role_insert = #{roleInsert},
+            </if>
+            <if test="roleDelete != null">
+                role_delete = #{roleDelete},
+            </if>
+            <if test="roleUpdate != null">
+                role_update = #{roleUpdate},
+            </if>
+            <if test="roleSelect != null">
+                role_select = #{roleSelect},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="queryById" parameterType="Integer" resultMap="role">
+        select <include refid="roleUserColumn"></include>
+        from tb_role r, tb_user u
+        where r.id = #{id}
+    </select>
+    <select id="query" parameterType="Role" resultMap="role">
+        select <include refid="roleUserColumn"></include>
+        from tb_role r,tb_user u
+        <where>
+            <if test="id != null">
+                and r.id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and r.name = #{name}
+            </if>
+            and r.parent = u.id
+        </where>
+        <if test="order != null and order != ''">
+            order by r.${order}
+        </if>
+        <if test="page != null">
+            limit #{page} ,10
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mfs.sms.mapper.ProductMapper">
+    <sql id="productColumn">
+        id,name,photo,manufacturer,product_date,self_life,warn_before,count,warn_count,in_time,in_price,out_price,
+        parent,type,q_code
+    </sql>
+    <sql id="productTypeUserColumn">
+        p.id,p.name,p.photo,p.manufacturer,p.product_date,p.self_life,p.warn_before,p.count,p.warn_count,p.in_time,p.in_price,p.out_price,
+        p.parent,p.type,p.q_code,u.name as uname,t.name as tname
+    </sql>
+    <resultMap id="product" type="Product">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="photo" column="photo"></result>
+        <result property="manufacturer" column="manufacturer"></result>
+        <result property="productDate" column="product_date"></result>
+        <result property="selfLife" column="self_life"></result>
+        <result property="warnBefore" column="warn_before"></result>
+        <result property="count" column="count"></result>
+        <result property="warnCount" column="warn_count"></result>
+        <result property="inTime" column="in_time"></result>
+        <result property="inPrice" column="in_price"></result>
+        <result property="outPrice" column="out_price"></result>
+        <result property="parentId" column="parent"></result>
+        <result property="typeId" column="type"></result>
+        <result property="qCode" column="q_code"></result>
+        <association property="parent" javaType="User">
+            <id property="id" column="parent"></id>
+            <result property="name" column="uname"></result>
+        </association>
+        <association property="type" javaType="Type">
+            <id property="id" column="type"></id>
+            <result property="name" column="tname"></result>
+        </association>
+    </resultMap>
+    <insert id="add" parameterType="Product">
+        insert into tb_product(
+        <include refid="productColumn"></include>
+        ) values(#{id},#{name},#{photo},#{manufacturer},#{productDate},#{selfLife},#{warnBefore},#{count},#{warnCount},
+        #{inTime},#{inPrice},#{outPrice},#{parentId},#{typeId},#{qCode})
+    </insert>
+    <delete id="delete" parameterType="Product">
+        delete from tb_product
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="Product">
+        update tb_product
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="photo != null and photo != ''">
+                photo = #{photo},
+            </if>
+            <if test="manufacturer != null and manufacturer != ''">
+                manufacturer = #{manufacturer},
+            </if>
+            <if test="productDate != null">
+                product_date = #{productDate},
+            </if>
+            <if test="selfLife != null">
+                self_life = #{selfLife},
+            </if>
+            <if test="warnBefore != null">
+                warn_before = #{warnBefore},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="warnCount != null">
+                warn_count = #{warnCount},
+            </if>
+            <if test="inTime != null">
+                in_time = #{inTime},
+            </if>
+            <if test="inPrice != null">
+                in_price = #{inPrice},
+            </if>
+            <if test="outPrice != null">
+                out_price = #{outPrice},
+            </if>
+            <if test="parentId != null and parentId != ''">
+                parent = #{parentId},
+            </if>
+            <if test="typeId != null" >
+                type = #{typeId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="queryById" parameterType="String" resultMap="product">
+        select <include refid="productTypeUserColumn"></include>
+        from tb_product p,tb_user u,tb_type t
+        where p.id = #{id} and p.parent = u.id and p.type = t.type
+    </select>
+    <select id="query" parameterType="Product" resultMap="product">
+        select <include refid="productTypeUserColumn"></include>
+        from tb_product p,tb_user u,tb_type t
+        <where>
+            <if test="id != null and id != ''">
+                and p.id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and p.name = #{name}
+            </if>
+            <if test="manufacturer != null and manufacturer != ''">
+                and p.manufacturer = #{manufacturer}
+            </if>
+            <if test="productDate != null ">
+                and p.product_date = #{productDate}
+            </if>
+            <if test="inTime != null">
+                and p.in_time = #{inTime}
+            </if>
+            <if test="parent != null and parent != ''">
+                and p.parent = #{parent}
+            </if>
+            <if test="typeId != null">
+                and p.type = #{typeId}
+            </if>
+            and p.parent = u.id and p.type = t.id
+        </where>
+        <if test="order != null and order != ''">
+            order by p.${order}
+        </if>
+        <if test="page != null">
+            limit #{page} ,10
+        </if>
+    </select>
+    <select id="queryGreaterThan" parameterType="CompareObj" resultMap="product">
+        select <include refid="productTypeUserColumn"></include>
+        from tb_product p,tb_type t,tb_user u
+        <where>
+            <if test="column1 != null and column1 != '' and column2 != null and column2 != ''">
+                and p.${column1} > p.${column2}
+            </if>
+            and type not in (1,2,3)
+            and p.type = t.id
+            and p.parent = u.id
+        </where>
+        order by p.id
+    </select>
+    <select id="queryBySelfLife" resultMap="product">
+        select <include refid="productTypeUserColumn"></include>
+        from tb_product p,tb_type t,tb_user u
+        <where>
+            subdate(now(),p.warn_before) >= adddate(p.product_date,p.self_life * 30)
+            and p.type = t.id
+            and p.parent = u.id
+            and p.count != 0
+            and p.type != 2
+        </where>
+        order by p.id
+    </select>
+</mapper>

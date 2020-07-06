@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mfs.sms.mapper.NumberMapper">
+    <sql id="numberColumn">
+        id,name,phone,id_number,create_time,score,parent,deteled
+    </sql>
+    <sql id="numberUserColumn">
+        n.id,n.name,n.phone,n.id_number,n.create_time,n.score,n.parent,u.name as uname
+    </sql>
+    <resultMap id="number" type="Number">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="phone" property="phone"></result>
+        <result column="id_number" property="idNumber"></result>
+        <result column="create_time" property="createTime"></result>
+        <result property="score" column="score"></result>
+        <result column="parent" property="parentId"></result>
+        <result column="deleted" property="deleted"></result>
+        <association property="parent" javaType="User" >
+            <id column="parent" property="id"></id>
+            <result property="name" column="uname"></result>
+        </association>
+    </resultMap>
+    <insert id="add" parameterType="Number">
+        insert into tb_number(
+        <include refid="numberColumn"></include>
+        ) values(#{id},#{name},#{phone},#{idNumber},#{createTime},#{score},#{parentId})
+    </insert>
+    <delete id="delete" parameterType="Number">
+        delete from tb_number
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="Number">
+        update tb_number
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="idNumber != null and idNumber != ''">
+                id_number = #{idNumber},
+            </if>
+            <if test="score != null">
+                score = #{score},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="queryById" parameterType="String" resultMap="number">
+        select <include refid="numberUserColumn"></include>
+        from tb_number n,tb_user u
+        where n.id = #{id} and n.parent = u.id;
+    </select>
+    <select id="query" parameterType="Number" resultMap="number">
+        select <include refid="numberUserColumn"></include>
+        from tb_number n,tb_user u
+        <where>
+            <if test="id != null and id != ''">
+                and n.id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and n.name like concat("%",#{name},"%")
+            </if>
+            <if test="phone != null and phone != ''">
+                and n.phone = #{phone}
+            </if>
+            <if test="idNumber != null and idNumber != ''">
+                and n.id_number = #{idNumber}
+            </if>
+            <if test="parentId != null and parentId != ''">
+                and n.parent = #{parentId}
+            </if>
+            <if test="deleted != null">
+                and n.deleted = #{deleted}
+            </if>
+            and n.parent = u.id
+        </where>
+        <if test="order != null and order != ''">
+            order by n.${order}
+        </if>
+        <if test="page != null">
+            limit #{page},10
+        </if>
+    </select>
+</mapper>

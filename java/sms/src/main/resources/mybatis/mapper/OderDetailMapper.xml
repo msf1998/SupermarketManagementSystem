@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mfs.sms.mapper.OrderDetailMapper">
+    <sql id="orderDetailColumn">
+        id,product,product_name,product_price,count,order_id
+    </sql>
+    <resultMap id="orderDetail" type="OrderDetail">
+        <id column="id" property="id"></id>
+        <result column="product" property="product"></result>
+        <result column="product_name" property="productName"></result>
+        <result column="product_price" property="productPrice"></result>
+        <result property="count" column="count"></result>
+        <result column="orderId" property="order"></result>
+    </resultMap>
+    <insert id="add" parameterType="OrderDetail">
+        insert into tb_order_detail(
+        <include refid="orderDetailColumn"></include>
+        ) values(#{id},#{product},#{productName},#{productPrice},#{count},#{order})
+    </insert>
+    <delete id="delete" parameterType="OrderDetail">
+        delete from tb_order_detail
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="order != null">
+                and order_id = #{order}
+            </if>
+        </where>
+    </delete>
+    <update id="update" parameterType="OrderDetail">
+        update tb_order_detail
+        <set>
+            <if test="product != null and product != ''">
+                product = #{product},
+            </if>
+            <if test="productName != null and productName != ''">
+                product_name = #{productName},
+            </if>
+            <if test="productPrice != null">
+                product_price = #{productPrice},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="order != null">
+                order_id = #{order},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="queryById" parameterType="Integer" resultMap="orderDetail">
+        select <include refid="orderDetailColumn"></include>
+        from tb_order_detail
+        where id = #{id}
+    </select>
+    <select id="query" parameterType="OrderDetail" resultMap="orderDetail">
+        select <include refid="orderDetailColumn"></include>
+        from tb_order_detail
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="product != null and product != ''">
+                and product = product
+            </if>
+            <if test="productName != null and productName != ''">
+                and product_name like concat("%",#{productName},"%")
+            </if>
+            <if test="productPrice != null">
+                and product_price = productPrice
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+            <if test="order != null">
+                and order_id = #{order}
+            </if>
+        </where>
+    </select>
+</mapper>
