@@ -7,7 +7,10 @@ import com.mfs.sms.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 
 @RequestMapping("/api/product")
@@ -16,49 +19,76 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @RequestMapping("/leading-out/purchase-order")
-    public Result createPurchaseOrder(@RequestBody Product product, HttpServletRequest request) {
-        //System.out.println(product);
+    //导入进货单
+    @RequestMapping("/leading-in/photo")
+    public Result leadingInPhoto(HttpServletRequest request, @RequestParam("file")MultipartFile file,@RequestParam("id") String id){
         try {
-            return productService.createPurchaseOrder(product,request);
+            return productService.editProductPhoto(request,file,id);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
-    @RequestMapping("/delete/count")
-    public Result deleteCountProduct(@RequestBody Product product, HttpServletRequest request) {
+    //导入进货单
+    @RequestMapping("/leading-in/purchase-order")
+    public Result leadingInPurchaseOrder(HttpServletRequest request, @RequestParam("file")MultipartFile file){
+        try {
+            return productService.leadingInPurchaseOrder(request,file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
+    //导出进货单
+    @RequestMapping("/leading-out/purchase-order")
+    public Result createPurchaseOrder( HttpServletRequest request) {
         //System.out.println(product);
         try {
-            return productService.deleteCountProduct(product,request);
+            return productService.createPurchaseOrder(request);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);        }
+            return new Result(3,"服务器异常",null,null);
+        }
     }
-    @RequestMapping("/edit/selflife")
-    public Result selfLifeWarn(@RequestBody Product product, HttpServletRequest request) {
+    //删除库存不足的商品
+    @RequestMapping("/delete/less-than/warn-count")
+    public Result deleteCountLessThanWarnCountProduct(@RequestBody Product product, HttpServletRequest request) {
+        //System.out.println(product);
         try {
-            return productService.editSelfLifeProduct(product,request);
+            return productService.deleteCountLessThanWarnCountProduct(product,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);        }
     }
-    @RequestMapping("/selflife")
-    public Result selfLifeWarn(HttpServletRequest request) {
+    //修改将要过期的商品
+    @RequestMapping("/edit/will/go-bad")
+    public Result editWillGoBadProduct(@RequestBody Product product, HttpServletRequest request) {
         try {
-            return productService.selfLifeWarn(request);
+            return productService.editWillGoBadProduct(product,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);        }
     }
-    @RequestMapping("/count")
-    public Result countWarn(HttpServletRequest request) {
+    //获取将要过期的的商品的列表
+    @RequestMapping("/list/will/go-bad")
+    public Result listWillGoBadProduct(HttpServletRequest request) {
         try {
-            return productService.countWarn(new CompareObj("warn_count","count"),request);
+            return productService.listWillGoBadProduct(request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);        }
     }
+    //获取库存过少的商品的列表
+    @RequestMapping("/list/less-than/warn-count")
+    public Result listCountLessThanWarnCountProduct(HttpServletRequest request) {
+        try {
+            return productService.listCountLessThanWarnCountProduct(new CompareObj("warn_count","count"),request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);        }
+    }
+
+    //增删改查
     @RequestMapping("/add")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result addProduct(@RequestBody  Product product, HttpServletRequest request) {

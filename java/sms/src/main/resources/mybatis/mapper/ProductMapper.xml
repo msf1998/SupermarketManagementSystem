@@ -154,11 +154,10 @@
         select <include refid="productTypeUserColumn"></include>
         from tb_product p,tb_type t,tb_user u
         <where>
-            subdate(now(),p.warn_before) >= adddate(p.product_date,p.self_life * 30)
+            date_sub(now(),interval p.warn_before day) >= date_add(p.product_date,interval p.self_life month)
             and p.type = t.id
             and p.parent = u.id
             and p.count != 0
-            and p.type != 2
         </where>
         order by p.id
     </select>
