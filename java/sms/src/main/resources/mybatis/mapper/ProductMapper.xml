@@ -101,7 +101,7 @@
     <select id="queryById" parameterType="String" resultMap="product">
         select <include refid="productTypeUserColumn"></include>
         from tb_product p,tb_user u,tb_type t
-        where p.id = #{id} and p.parent = u.id and p.type = t.type
+        where p.id = #{id} and p.parent = u.id and p.type = t.id
     </select>
     <select id="query" parameterType="Product" resultMap="product">
         select <include refid="productTypeUserColumn"></include>

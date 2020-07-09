@@ -1,10 +1,9 @@
 package com.mfs.sms.service;
 
-import com.mfs.sms.mapper.OrderDetailMapper;
-import com.mfs.sms.mapper.OrderMapper;
-import com.mfs.sms.mapper.UserMapper;
+import com.mfs.sms.mapper.*;
 import com.mfs.sms.pojo.*;
 import com.mfs.sms.pojo.Number;
+import com.mfs.sms.pojo.to.SaleTo;
 import com.mfs.sms.utils.CryptUtil;
 import com.mfs.sms.utils.RequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -24,7 +25,109 @@ public class OrderService {
     private UserMapper userMapper;
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private ProductMapper productMapper;
+    @Autowired
+    private NumberMapper numberMapper;
 
+
+    //创建订单完成交易
+    @Transactional(isolation = Isolation.REPEATABLE_READ,timeout = 5)
+    public Result createOrder(SaleTo saleTo, HttpServletRequest request) {
+        //用户验证
+        String userId = RequestUtil.getUserId(request);
+        User user = userMapper.queryById(userId);
+        if (user == null) {
+            return new Result(4,"用户不存在",null,null);
+        }
+        //非会员id全置1
+        if (saleTo.getNumberId() == null || saleTo.getNumberId().equals("")) {
+            saleTo.setNumberId("");
+        }
+        //检查会员信息正确性
+        Number number = numberMapper.queryById(saleTo.getNumberId());
+        if (number == null) {
+            return new Result(2,"会员Id有误",null,null);
+        }
+        //获取购买的商品
+        List<Product> list = new LinkedList<>();
+        double sum = 0;
+        for (int i = 0;i < saleTo.getProductId().length; i ++) {
+            Product product = productMapper.queryById(saleTo.getProductId()[i]);
+            if (product.getCount() < saleTo.getCount()[i]) {
+                return new Result(2,"库存不足",null,null);
+            }
+            sum += product.getOutPrice() * saleTo.getCount()[i];
+            product.setCount(product.getCount() - saleTo.getCount()[i]);
+            int res = productMapper.update(product);
+            if (res != 1) {
+                int j = 1 / 0;
+            }
+            product.setCount(saleTo.getCount()[i]);
+            list.add(product);
+        }
+        if (saleTo.getSale() == true) {   //商品销售
+            //创建订单
+            Order order = new Order(null,null,sum,new Date(),number.getId(),null,userId,null,null,null);
+            int res = orderMapper.addAndReturnId(order);
+            if (res != 1) {
+                int i = 1/0;
+            }
+            System.out.println(order.getId());
+            //创建订单详情
+            OrderDetail orderDetail;
+            for (Product product : list) {
+                if(product.getTypeId() == 1) {
+                    int i = 1 / 0;
+                }
+                orderDetail = new OrderDetail(null,product.getId(),product.getName(),product.getOutPrice(),product.getCount(),order.getId());
+                res = orderDetailMapper.add(orderDetail);
+                if (res != 1) {
+                    int i = 1/0;
+                }
+            }
+            number.setScore(number.getScore() + sum);
+            res = numberMapper.update(number);
+            if (res != 1) {
+                int i = 1 / 0;
+            }
+            return new Result(1,"付款成功",null,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        } else { //积分兑换
+            if (number.getId().equals("1")) {
+                return new Result(2,"该会员不能参加积分兑换",null,null);
+            }
+            if (sum <= number.getScore()) {
+                //创建订单
+                Order order = new Order(null,null,sum,new Date(),number.getId(),null,userId,null,null,null);
+                int res = orderMapper.addAndReturnId(order);
+                if (res != 1) {
+                    int i = 1/0;
+                }
+                //创建订单详情
+                OrderDetail orderDetail;
+                for (Product product : list) {
+                    if(product.getTypeId() != 1) {
+                        int i = 1 / 0;
+                    }
+                    orderDetail = new OrderDetail(null,product.getId(),product.getName(),product.getOutPrice(),product.getCount(),order.getId());
+                    res = orderDetailMapper.add(orderDetail);
+                    if (res != 1) {
+                        int i = 1/0;
+                    }
+                }
+                number.setScore(number.getScore() - sum);
+                res = numberMapper.update(number);
+                if (res != 1) {
+                    int i = 1 / 0;
+                }
+                return new Result(1,"兑换成功",null,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            } else {
+                return new Result(2,"积分不足",null,null);
+            }
+        }
+
+    }
+    //增删改查
     @Transactional(isolation = Isolation.SERIALIZABLE,timeout = 5)
     public Result addOrder(Order order, HttpServletRequest request){
         //用户验证

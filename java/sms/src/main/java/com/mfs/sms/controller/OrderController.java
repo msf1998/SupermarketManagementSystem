@@ -3,6 +3,7 @@ package com.mfs.sms.controller;
 import com.mfs.sms.mapper.OrderMapper;
 import com.mfs.sms.pojo.Order;
 import com.mfs.sms.pojo.Result;
+import com.mfs.sms.pojo.to.SaleTo;
 import com.mfs.sms.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,17 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @RequestMapping("/pay")
+    //@CrossOrigin(origins = {"*"},allowCredentials = "true")
+    public Result createOrder(@RequestBody SaleTo saleTo, HttpServletRequest request) {
+        System.out.println(saleTo);
+        try {
+            return orderService.createOrder(saleTo,request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
     @RequestMapping("/add")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result addOrder(@RequestBody Order order, HttpServletRequest request) {

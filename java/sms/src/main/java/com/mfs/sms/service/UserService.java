@@ -10,9 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -150,6 +155,52 @@ public class UserService {
         List<User> list = userMapper.query(user);
         //System.out.println(list);
         return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public Result editMe(MultipartFile head,String pasword,HttpServletRequest request) throws Exception{
+        String userId = RequestUtil.getUserId(request);
+        User user1 = userMapper.queryById(userId);
+        if (user1 == null) {
+            return new Result(4,"用户不存在",null,null);
+        }
+        User u = new User();
+        u.setId(userId);
+        if (head != null) {
+            String name = head.getOriginalFilename();
+            if (!(name.endsWith(".jpg") || name.endsWith(".png"))) {
+                return new Result(2,"仅支持.jpg或者.png格式的图片",null,null);
+            }
+            name = userId + "" + new Date().getTime() + (name.endsWith(".jpg") ? ".jpg" : ".png");
+            File file = new File("E:/images/sms/head/" + name);
+            if (file.exists()) {
+                file.createNewFile();
+            }
+            InputStream is = head.getInputStream();
+            OutputStream os = new FileOutputStream(file);
+            byte[] b = new byte[1024];
+            int n = 0;
+            while ((n = is.read(b)) >= 0) {
+                os.write(b,0,n);
+            }
+            is.close();
+            os.close();
+            u.setHead(name);
+            user1.setHead(name);
+        }
+        if (pasword != null && !pasword.equals("")) {
+            String salt = SaltGenerator.generatorSalt();
+            u.setSalt(salt);
+            u.setPassword(CryptUtil.getMessageDigestByMD5(pasword + "" + salt));
+            user1.setSalt(salt);
+            user1.setPassword(CryptUtil.getMessageDigestByMD5(pasword + "" + salt));
+        }
+        int res = userMapper.update(u);
+        if (res == 1) {
+            return new Result(1,"修改成功",user1,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        } else {
+            return new Result(1,"修改失败",null,null);
+        }
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

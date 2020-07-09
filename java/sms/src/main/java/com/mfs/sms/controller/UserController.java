@@ -4,10 +4,8 @@ import com.mfs.sms.pojo.Result;
 import com.mfs.sms.pojo.User;
 import com.mfs.sms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,6 +55,16 @@ public class UserController {
         //System.out.println(user);
         try {
             return userService.listUser(user,request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
+
+    @RequestMapping("/edit/me")
+    public Result editMe(@RequestParam("head") MultipartFile head,@RequestParam("password") String password, HttpServletRequest request) {
+        try {
+            return userService.editMe(head,password,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);

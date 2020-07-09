@@ -46,6 +46,9 @@
             <if test="password != null and password != ''">
                 password = #{password},
             </if>
+            <if test="salt != null and salt != ''">
+                salt = #{salt},
+            </if>
             <if test="name != null and name != ''">
                 name = #{name},
             </if>

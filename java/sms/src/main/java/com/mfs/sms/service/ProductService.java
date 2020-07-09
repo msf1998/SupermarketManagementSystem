@@ -38,6 +38,20 @@ public class ProductService {
     private UserMapper userMapper;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+    public Result getProduct(Product product, HttpServletRequest request) {
+        //验证是否登录
+        String userId = RequestUtil.getUserId(request);
+        User user = userMapper.queryById(userId);
+        if (user == null) {
+            return new Result(4,"用户不存在",null,null);
+        }
+        Product product1 = productMapper.queryById(product.getId());
+        if (!(product1 != null && product1.getCount() >= product.getCount())) {
+            return new Result(2,"库存不足",null,null);
+        }
+        product1.setCount(product.getCount());
+        return new Result(1,"查询成功",product1,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+    }
     //修改商品图片
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
     public Result editProductPhoto(HttpServletRequest request, MultipartFile file,String id) throws Exception {
@@ -47,7 +61,7 @@ public class ProductService {
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
-        if (!user.getRole().getProductInsert()) {
+        if (!user.getRole().getProductUpdate()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
         String name = file.getOriginalFilename();

@@ -19,6 +19,16 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+
+    @RequestMapping("/get")
+    public Result getProduct(@RequestBody Product product,HttpServletRequest request) {
+        try {
+            return productService.getProduct(product,request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
     //导入进货单
     @RequestMapping("/leading-in/photo")
     public Result leadingInPhoto(HttpServletRequest request, @RequestParam("file")MultipartFile file,@RequestParam("id") String id){

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mfs.sms.mapper.OrderMapper">
     <sql id="orderColumn">
-        id,describe,sum,create_time,creator,parent
+        id,`describe`,sum,create_time,creator,parent
     </sql>
     <sql id="orderUserNumberColumn">
         o.id,o.describe,o.sum,o.create_time,o.creator,o.parent,n.name as nname,u.name as uname
@@ -26,6 +26,11 @@
         </association>
     </resultMap>
     <insert id="add" parameterType="Order">
+        insert into tb_order(
+        <include refid="orderColumn"></include>
+        ) values(#{id},#{describe},#{sum},#{createTime},#{creatorId},#{parentId})
+    </insert>
+    <insert id="addAndReturnId" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
         insert into tb_order(
         <include refid="orderColumn"></include>
         ) values(#{id},#{describe},#{sum},#{createTime},#{creatorId},#{parentId})
