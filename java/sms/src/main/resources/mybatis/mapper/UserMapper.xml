@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mfs.sms.mapper.UserMapper">
     <sql id="userColumn">
-        id,salt,head,name,role,create_time,deleted
+        id,password,salt,head,name,role,create_time,deleted
     </sql>
     <resultMap id="user" type="User">
         <id property="id" column="id"></id>
@@ -21,7 +21,7 @@
     <insert id="add" parameterType="User">
         insert into tb_user(
         <include refid="userColumn"></include>
-        ) values(#{id},#{password},#{salt},#{head},#{name},#{roleId},#{createTime})
+        ) values(#{id},#{password},#{salt},#{head},#{name},#{roleId},#{createTime},#{deleted})
     </insert>
     <delete id="delete" parameterType="User">
         delete from tb_user
@@ -56,10 +56,10 @@
                 head = #{head},
             </if>
             <if test="roleId != null">
-                role = #{roleId }
+                role = #{roleId },
             </if>
             <if test="deleted != null">
-                deleted = #{deleted}
+                deleted = #{deleted},
             </if>
         </set>
         where id = #{id}
@@ -67,7 +67,7 @@
     <select id="queryById" parameterType="String" resultMap="user">
         select <include refid="userColumn"></include>
         from tb_user
-        where id = #{id}
+        where id = #{id} and deleted = false
     </select>
     <select id="query" parameterType="User" resultMap="user">
         select <include refid="userColumn"></include>

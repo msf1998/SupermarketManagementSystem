@@ -4,6 +4,7 @@ import com.mfs.sms.pojo.Result;
 import com.mfs.sms.pojo.User;
 import com.mfs.sms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,7 @@ public class UserController {
     @RequestMapping("/edit")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result editUser(@RequestBody User user,HttpServletRequest request) {
-        System.out.println(user);
+        //System.out.println(user);
         try {
             return userService.editUser(user,request);
         } catch (Exception e) {
@@ -61,10 +62,19 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/edit/me")
-    public Result editMe(@RequestParam("head") MultipartFile head,@RequestParam("password") String password, HttpServletRequest request) {
+    @RequestMapping("/edit/me1")
+    public Result editMe1(@RequestParam("head") MultipartFile head, @RequestParam("password") String password, HttpServletRequest request) {
         try {
             return userService.editMe(head,password,request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
+    @RequestMapping("/edit/me2")
+    public Result editMe2(@RequestParam("password") String password, HttpServletRequest request) {
+        try {
+            return userService.editMe(null,password,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);

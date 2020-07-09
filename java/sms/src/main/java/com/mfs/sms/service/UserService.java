@@ -1,5 +1,7 @@
 package com.mfs.sms.service;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.mfs.sms.mapper.UserMapper;
 import com.mfs.sms.pojo.Result;
 import com.mfs.sms.pojo.User;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -42,7 +45,7 @@ public class UserService {
             if (user3.getDeleted()) {
                 String salt = SaltGenerator.generatorSalt();
                 user.setSalt(salt);
-                user.setPassword(user.getPassword() == null ? CryptUtil.getMessageDigestByMD5("123" + salt) : CryptUtil.getMessageDigestByMD5(user.getPassword() + salt));
+                user.setPassword(user.getPassword() == null ? CryptUtil.getMessageDigestByMD5(CryptUtil.getMessageDigestByMD5("123") + salt) : CryptUtil.getMessageDigestByMD5(user.getPassword() + salt));
                 user.setHead("default.jpg");
                 user.setCreateTime(new Date());
                 user.setDeleted(false);
@@ -66,6 +69,7 @@ public class UserService {
         user.setPassword(user.getPassword() == null ? CryptUtil.getMessageDigestByMD5("123" + salt) : CryptUtil.getMessageDigestByMD5(user.getPassword() + salt));
         user.setHead("default.jpg");
         user.setCreateTime(new Date());
+        user.setDeleted(false);
 
         int res = userMapper.add(user);
         if (res == 1) {
@@ -74,6 +78,9 @@ public class UserService {
             user2.setPage(0);
             user2.setDeleted(false);
             List<User> list = userMapper.query(user2);
+            for (int i = 0;i < list.size(); i ++) {
+                list.get(i).setPassword(null);
+            }
             //更新token
             return new Result(1,"添加成功",list, CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
         } else {
@@ -107,6 +114,9 @@ public class UserService {
             user2.setPage(0);
             user2.setDeleted(false);
             List<User> list = userMapper.query(user2);
+            for (int i = 0;i < list.size(); i ++) {
+                list.get(i).setPassword(null);
+            }
             return new Result(1,"删除成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
         } else {
             return new Result(2,"删除失败",null,null);
@@ -121,8 +131,16 @@ public class UserService {
         if (user1 == null) {
             return new Result(4,"用户不存在",null,null);
         }
+        if (user.getId().equals("1")) {
+            return new Result(2,"不能修改root用户",null,null);
+        }
         if (!user1.getRole().getUserUpdate()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
+        }
+        if (user.getPassword() != null && !user.getPassword().equals("")) {
+            String salt = SaltGenerator.generatorSalt();
+            user.setPassword(CryptUtil.getMessageDigestByMD5(user.getPassword() + salt));
+            user.setSalt(salt);
         }
         int res = userMapper.update(user);
         if (res == 1) {
@@ -131,6 +149,9 @@ public class UserService {
             user2.setPage(0);
             user2.setDeleted(false);
             List<User> list = userMapper.query(user2);
+            for (int i = 0;i < list.size(); i ++) {
+                list.get(i).setPassword(null);
+            }
             return new Result(1,"修改成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
         } else {
             return new Result(2,"修改失败",null,null);
@@ -153,12 +174,15 @@ public class UserService {
         }
         user.setDeleted(false);
         List<User> list = userMapper.query(user);
+        for (int i = 0;i < list.size(); i ++) {
+            list.get(i).setPassword(null);
+        }
         //System.out.println(list);
         return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Result editMe(MultipartFile head,String pasword,HttpServletRequest request) throws Exception{
+    public Result editMe(MultipartFile head,String password,HttpServletRequest request) throws Exception{
         String userId = RequestUtil.getUserId(request);
         User user1 = userMapper.queryById(userId);
         if (user1 == null) {
@@ -188,12 +212,12 @@ public class UserService {
             u.setHead(name);
             user1.setHead(name);
         }
-        if (pasword != null && !pasword.equals("")) {
+        if (password != null && !password.equals("")) {
             String salt = SaltGenerator.generatorSalt();
             u.setSalt(salt);
-            u.setPassword(CryptUtil.getMessageDigestByMD5(pasword + "" + salt));
+            u.setPassword(CryptUtil.getMessageDigestByMD5(password + "" + salt));
             user1.setSalt(salt);
-            user1.setPassword(CryptUtil.getMessageDigestByMD5(pasword + "" + salt));
+            user1.setPassword(CryptUtil.getMessageDigestByMD5(password + "" + salt));
         }
         int res = userMapper.update(u);
         if (res == 1) {
@@ -211,7 +235,7 @@ public class UserService {
         if (user1 == null) {
             return new Result(4,"用户不存在",null,null);
         }
-        user1.setPassword(null);
+
         return new Result(1,"查询成功",user1,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
 
@@ -230,7 +254,7 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE,timeout = 5)
-    public Result register(User user) {
+    public Result register(User user) throws Exception{
         User user1 = userMapper.queryById(user.getId());
         if (user1 != null) {
             return new Result(2,"用户已存在",null,null);
@@ -240,16 +264,32 @@ public class UserService {
         user.setHead("default.jpg");
         user.setCreateTime(new Date());
         user.setSalt(salt);
-        if (user.getConfirmCode().equals("admin")) {
-            user.setRoleId(1);
-            int res = userMapper.add(user);
-            if (res == 1) {
-                return new Result(1,"注册成功",null,null);
-            }
-            return new Result(2,"注册失败",null,null);
-        } else {
-            return new Result(2,"注册失败",null,null);
+        user.setDeleted(false);
+        //验证证书
+        String content = CryptUtil.getAuthorityContent(user.getConfirmCode());
+
+        if (content == null) {
+            return new Result(2,"证书错误,请购买正版证书",null,null);
         }
+        String[] split = content.split("##");
+        if (split.length != 3) {
+            return new Result(2,"证书错误,请购买正版证书",null,null);
+        }
+        if (!split[0].equals("MFS")) {
+            return new Result(2,"证书错误,请购买正版证书",null,null);
+        }
+        if ((new Date().getTime() - Long.valueOf(split[1])) > 24 * 60 * 60 * 1000) {
+            return new Result(2,"证书已过期,请购买正版证书",null,null);
+        }
+        if (!split[2].equals("admin")) {
+            return new Result(2,"证书错误,请购买正版证书",null,null);
+        }
+        user.setRoleId(1);
+        int res = userMapper.add(user);
+        if (res == 1) {
+            return new Result(1,"注册成功",null,null);
+        }
+        return new Result(2,"注册失败",null,null);
     }
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED,timeout = 5)

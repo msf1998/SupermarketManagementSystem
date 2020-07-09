@@ -150,7 +150,7 @@
     <select id="queryById" parameterType="Integer" resultMap="role">
         select <include refid="roleUserColumn"></include>
         from tb_role r, tb_user u
-        where r.id = #{id}
+        where r.id = #{id} and r.parent = u.id
     </select>
     <select id="query" parameterType="Role" resultMap="role">
         select <include refid="roleUserColumn"></include>

@@ -70,7 +70,7 @@ public class ProductService {
         if (!matcher.matches()) {
             return new Result(2,"文件格式不正确",null,null);
         }
-        String photoName = UUID.randomUUID().toString() + new Date().getTime() + (name.endsWith(".png") ? ".png" : "jpg");
+        String photoName = UUID.randomUUID().toString() + new Date().getTime() + (name.endsWith(".png") ? ".png" : ".jpg");
         String path = "E:/images/sms/product/" + photoName;
         File f = new File(path);
         if (!f.exists()) {
@@ -194,10 +194,12 @@ public class ProductService {
         if (file.exists()) {
             file.delete();
         }
-        //删除图片
-        file = new File("E:/images/sms/product/" + product1.getPhoto());
-        if (file.exists()) {
-            file.delete();
+        if (!product1.getPhoto().equals("default.jpg")) {
+            //删除图片
+            file = new File("E:/images/sms/product/" + product1.getPhoto());
+            if (file.exists()) {
+                file.delete();
+            }
         }
         int res = productMapper.delete(product);
         if (res == 1) {
@@ -311,10 +313,12 @@ public class ProductService {
         if (file.exists()) {
             file.delete();
         }
-        //删除图片
-        file = new File("E:/images/sms/product/" + product1.getPhoto());
-        if (file.exists()) {
-            file.delete();
+        if (!product1.getPhoto().equals("default.jpg")) {
+            //删除图片
+            file = new File("E:/images/sms/product/" + product1.getPhoto());
+            if (file.exists()) {
+                file.delete();
+            }
         }
         int res = productMapper.delete(product);
         if (res == 1) {
