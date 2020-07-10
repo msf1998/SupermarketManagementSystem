@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mfs.sms.mapper.LogMapper">
+    <sql id="logColumn">
+        id,`action`,result,create_time,creator
+    </sql>
+    <insert id="add" parameterType="Log">
+        insert into tb_log(
+        <include refid="logColumn"></include>
+        ) values(#{id},#{action},#{result},#{createTime},#{creator})
+    </insert>
+</mapper>

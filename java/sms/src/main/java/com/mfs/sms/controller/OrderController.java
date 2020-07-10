@@ -18,10 +18,20 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+
+    @RequestMapping("/finance")
+    public Result getFinanceChart(HttpServletRequest request) {
+        try {
+            return orderService.getFinanceChart(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
     @RequestMapping("/pay")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result createOrder(@RequestBody SaleTo saleTo, HttpServletRequest request) {
-        System.out.println(saleTo);
+        //System.out.println(saleTo);
         try {
             return orderService.createOrder(saleTo,request);
         } catch (Exception e) {

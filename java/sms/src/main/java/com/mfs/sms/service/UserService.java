@@ -2,8 +2,11 @@ package com.mfs.sms.service;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.mfs.sms.mapper.RoleMapper;
 import com.mfs.sms.mapper.UserMapper;
+import com.mfs.sms.pojo.Product;
 import com.mfs.sms.pojo.Result;
+import com.mfs.sms.pojo.Role;
 import com.mfs.sms.pojo.User;
 import com.mfs.sms.utils.CryptUtil;
 import com.mfs.sms.utils.RequestUtil;
@@ -28,6 +31,8 @@ import java.util.List;
 public class UserService {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RoleMapper roleMapper;
 
     @Transactional(isolation = Isolation.DEFAULT,timeout = 5)
     public Result addUser(User user, HttpServletRequest request) {
@@ -39,6 +44,11 @@ public class UserService {
         }
         if (!user1.getRole().getUserInsert()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
+        }
+        //授予的角色的权限等级不能高于操作这本身
+        Role role = roleMapper.queryById(user.getRoleId());
+        if (role.compareTo(user1.getRole()) == 1) {
+            return new Result(2,"授予权限过高",null,null);
         }
         User user3 = userMapper.queryById(user.getId());
         if(user3 != null) {
@@ -136,6 +146,11 @@ public class UserService {
         }
         if (!user1.getRole().getUserUpdate()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
+        }
+        //授予的角色的权限等级不能高于操作这本身
+        Role role = roleMapper.queryById(user.getRoleId());
+        if (role.compareTo(user1.getRole()) == 1) {
+            return new Result(2,"授予权限过高",null,null);
         }
         if (user.getPassword() != null && !user.getPassword().equals("")) {
             String salt = SaltGenerator.generatorSalt();

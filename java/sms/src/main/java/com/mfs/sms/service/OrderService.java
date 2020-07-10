@@ -6,6 +6,7 @@ import com.mfs.sms.pojo.Number;
 import com.mfs.sms.pojo.to.SaleTo;
 import com.mfs.sms.utils.CryptUtil;
 import com.mfs.sms.utils.RequestUtil;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,8 +32,35 @@ public class OrderService {
     private ProductMapper productMapper;
     @Autowired
     private NumberMapper numberMapper;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
+    public Result getFinanceChart(HttpServletRequest request) throws Exception{
+        //用户验证
+        String userId = RequestUtil.getUserId(request);
+        User user = userMapper.queryById(userId);
+        if (user == null) {
+            return new Result(4,"用户不存在",null,null);
+        }
+        if (!user.getRole().getOrderSelect()) {
+            return new Result(2,"抱歉,您没有该权限",null,null);
+        }
+        List<ChartData> list = new LinkedList<>();
+        int year = new Date().getYear() + 1900;
+        int month = new Date().getMonth() + 1;
 
+        for (int day = 1; day <= 30; day ++) {
+            Order order = new Order();
+            order.setCreateTime(sdf.parse(year + "-" + month + "-" + day));
+            List<Order> list1 = orderMapper.query(order);
+            double sum = 0;
+            for (Order o : list1) {
+                sum += o.getSum();
+            }
+            list.add(new ChartData((-day)+"-",sum));
+        }
+        return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+    }
     //创建订单完成交易
     @Transactional(isolation = Isolation.REPEATABLE_READ,timeout = 5)
     public Result createOrder(SaleTo saleTo, HttpServletRequest request) {
@@ -98,7 +128,7 @@ public class OrderService {
             }
             if (sum <= number.getScore()) {
                 //创建订单
-                Order order = new Order(null,null,sum,new Date(),number.getId(),null,userId,null,null,null);
+                Order order = new Order(null,"积分兑换",sum,new Date(),number.getId(),null,userId,null,null,null);
                 int res = orderMapper.addAndReturnId(order);
                 if (res != 1) {
                     int i = 1/0;

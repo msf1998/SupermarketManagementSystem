@@ -79,6 +79,10 @@
             <if test="parentId != null and parentId != ''">
                 and o.parent = #{parentId}
             </if>
+            <if test="createTime != null">
+                and date(o.create_time) = date(#{createTime})
+                and o.describe != '积分兑换'
+            </if>
             and o.parent = u.id
             and o.creator = n.id
         </where>

@@ -11,5 +11,5 @@ public interface RoleMapper {
     int delete(Role role);
     int update(Role role);
     List<Role> query(Role role);
-    Product queryById(Integer id);
+    Role queryById(Integer id);
 }
