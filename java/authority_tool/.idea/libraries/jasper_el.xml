@@ -1,0 +1,30 @@
+<component name="libraryTable">
+  <library name="jasper-el">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/jasper-el.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-websocket.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/websocket-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-util.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-util-scan.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-jni.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-jdbc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-dbcp.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-coyote.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/tomcat-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/servlet-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/jsp-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/jaspic-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/jasper.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/el-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/ecj-4.6.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/annotations-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/catalina-ant.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/catalina-ha.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/catalina-storeconfig.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/catalina-tribes.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../Tomcat/apache-tomcat-8.5.43/lib/catalina.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
