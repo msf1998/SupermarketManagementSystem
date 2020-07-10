@@ -4,10 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mfs.sms.mapper.NumberMapper">
     <sql id="numberColumn">
-        id,name,phone,id_number,create_time,score,parent,deteled
+        id,name,phone,id_number,create_time,score,parent,deleted
     </sql>
     <sql id="numberUserColumn">
-        n.id,n.name,n.phone,n.id_number,n.create_time,n.score,n.parent,u.name as uname
+        n.id,n.name,n.phone,n.id_number,n.create_time,n.score,n.parent,n.deleted,u.name as uname
     </sql>
     <resultMap id="number" type="Number">
         <id column="id" property="id"></id>
@@ -26,7 +26,7 @@
     <insert id="add" parameterType="Number">
         insert into tb_number(
         <include refid="numberColumn"></include>
-        ) values(#{id},#{name},#{phone},#{idNumber},#{createTime},#{score},#{parentId})
+        ) values(#{id},#{name},#{phone},#{idNumber},#{createTime},#{score},#{parentId},#{deleted})
     </insert>
     <delete id="delete" parameterType="Number">
         delete from tb_number
@@ -53,6 +53,9 @@
             </if>
             <if test="score != null">
                 score = #{score},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted}
             </if>
         </set>
         where id = #{id}

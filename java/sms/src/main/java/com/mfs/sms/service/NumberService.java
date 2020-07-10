@@ -37,6 +37,7 @@ public class NumberService {
         }
         //查看是否已注册
         Number number2 = numberMapper.queryById(number.getPhone());
+        System.out.println(number2);
         if (number2 != null) {
             if (number2.getDeleted() == true) {
                 number.setDeleted(false);
@@ -62,6 +63,7 @@ public class NumberService {
         number.setCreateTime(new Date());
         number.setParentId(userId);
         number.setScore(0.0);
+        number.setDeleted(false);
         int res = numberMapper.add(number);
         if (res == 1) {
             Number number1 = new Number();

@@ -144,7 +144,7 @@
             <if test="column1 != null and column1 != '' and column2 != null and column2 != ''">
                 and p.${column1} > p.${column2}
             </if>
-            and type not in (1,2,3)
+            and type not in (3)
             and p.type = t.id
             and p.parent = u.id
         </where>
@@ -154,7 +154,7 @@
         select <include refid="productTypeUserColumn"></include>
         from tb_product p,tb_type t,tb_user u
         <where>
-            date_sub(now(),interval p.warn_before day) >= date_add(p.product_date,interval p.self_life month)
+            now() > date_sub(date_add(p.product_date,interval p.self_life month),interval p.warn_before day)
             and p.type = t.id
             and p.parent = u.id
             and p.count != 0

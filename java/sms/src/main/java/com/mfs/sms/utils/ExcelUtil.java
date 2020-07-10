@@ -12,7 +12,7 @@ import java.util.*;
 
 public class ExcelUtil {
     private static List<String> title = Arrays.asList("商品名", "类型编号","供货商","保质期(月)","提醒(天)","进价","售价","编号","生产日期","数量","预警库存");
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
     private ExcelUtil(){}
 
@@ -29,11 +29,10 @@ public class ExcelUtil {
                 sheet.addCell(new Label(0,i,product.getName()));
                 sheet.addCell(new Label(1,i,product.getTypeId().toString()));
                 sheet.addCell(new Label(2,i,product.getManufacturer()));
-                sheet.addCell(new Label(3,i,sdf.format(product.getProductDate())));
-                sheet.addCell(new Label(4,i,product.getSelfLife().toString()));
-                sheet.addCell(new Label(5,i,product.getWarnBefore().toString()));
-                sheet.addCell(new Label(6,i,product.getInPrice().toString()));
-                sheet.addCell(new Label(7,i,product.getOutPrice().toString()));
+                sheet.addCell(new Label(3,i,product.getSelfLife().toString()));
+                sheet.addCell(new Label(4,i,product.getWarnBefore().toString()));
+                sheet.addCell(new Label(5,i,product.getInPrice().toString()));
+                sheet.addCell(new Label(6,i,product.getOutPrice().toString()));
                 i ++;
             }
             workbook.write();

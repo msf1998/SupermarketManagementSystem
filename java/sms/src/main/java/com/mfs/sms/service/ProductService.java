@@ -36,7 +36,7 @@ public class ProductService {
     private ProductMapper productMapper;
     @Autowired
     private UserMapper userMapper;
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
 
     public Result getProduct(Product product, HttpServletRequest request) {
         //验证是否登录
@@ -162,7 +162,7 @@ public class ProductService {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
         List<Product> list = productMapper.queryGreaterThan(new CompareObj("warn_count","count"));
-        String path = "E:/images/sms/product/leading-out/" + userId + new Date().getTime() + ".xls";
+        String path = "E:/images/sms/product/excel/leading-out/" + userId + new Date().getTime() + ".xls";
         String file = ExcelUtil.write(path, list);
         int res = 1;
         for (Product p : list) {
@@ -362,6 +362,9 @@ public class ProductService {
         }
         if (!user.getRole().getProductSelect()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
+        }
+        if(product.getPage() != null) {
+            product.setPage(product.getPage() * 10);
         }
         List<Product> list = productMapper.query(product);
         return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));

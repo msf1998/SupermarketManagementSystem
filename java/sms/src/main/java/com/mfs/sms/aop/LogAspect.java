@@ -44,7 +44,7 @@ public class LogAspect {
             Log log = Log.getLog();
             log.setId(null);
             log.setAction("{method:'"+ joinPoint.getSignature().getName() +"',args:'" + Arrays.toString(joinPoint.getArgs()) + "'}");
-            log.setResult(object.toString());
+            log.setResult(object.toString().length() > 10240 ? object.toString().substring(0,10000) : object.toString());
             log.setCreateTime(new Date());
             String creator = null;
             if (joinPoint.getSignature().getName().contains("login")) {

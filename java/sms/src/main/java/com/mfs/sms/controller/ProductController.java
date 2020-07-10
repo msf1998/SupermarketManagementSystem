@@ -124,7 +124,7 @@ public class ProductController {
     @RequestMapping("/edit")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result editProduct(@RequestBody Product product,HttpServletRequest request) {
-        System.out.println(product);
+        //System.out.println(product);
         try {
             return productService.editProduct(product,request);
         } catch (Exception e) {
