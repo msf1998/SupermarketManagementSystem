@@ -38,20 +38,29 @@ public class ProductService {
     private UserMapper userMapper;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
 
+    /**
+    *@Author dyz
+    * */
     public Result getProduct(Product product, HttpServletRequest request) {
-        //验证是否登录
+        //从token获取userId
         String userId = RequestUtil.getUserId(request);
+        //通过ID获取用户
         User user = userMapper.queryById(userId);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
+
         Product product1 = productMapper.queryById(product.getId());
+
         if (!(product1 != null && product1.getCount() >= product.getCount())) {
             return new Result(2,"库存不足",null,null);
         }
+
         product1.setCount(product.getCount());
+
         return new Result(1,"查询成功",product1,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
+
     //修改商品图片
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
     public Result editProductPhoto(HttpServletRequest request, MultipartFile file,String id) throws Exception {
@@ -149,26 +158,34 @@ public class ProductService {
         List<Product> l = productMapper.query(product1);
         return new Result(1,"导入成功",l,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
+    /**
+     * @Author lzc
+     * */
     //创建进货单
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
     public Result createPurchaseOrder(HttpServletRequest request) {
-        //验证是否登录
         String userId = RequestUtil.getUserId(request);
         User user = userMapper.queryById(userId);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
+
         if (!user.getRole().getProductUpdate()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
         List<Product> list = productMapper.queryGreaterThan(new CompareObj("warn_count","count"));
+
         String path = "E:/images/sms/product/excel/leading-out/" + userId + new Date().getTime() + ".xls";
+
         String file = ExcelUtil.write(path, list);
+
         int res = 1;
         for (Product p : list) {
             p.setTypeId(3);
             res = res * productMapper.update(p);
         }
+
         if (file.contains(userId) && res == 1){
             return new Result(1,"创建成功",file,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
         } else {
@@ -176,24 +193,30 @@ public class ProductService {
             return new Result(2,"创建excel失败",null,null);
         }
     }
+    /**
+     * @Author lzc
+     * */
     //删除库存过少的商品
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
     public Result deleteCountLessThanWarnCountProduct(Product product,HttpServletRequest request) {
-        //验证是否登录
+        //验证用户合法性
         String userId = RequestUtil.getUserId(request);
         User user = userMapper.queryById(userId);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
+
         if (!user.getRole().getProductDelete()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
         //删除二维码
         Product product1 = productMapper.queryById(product.getId());
         File file = new File("E:/images/sms/product/qcode/" + product1.getQCode());
         if (file.exists()) {
             file.delete();
         }
+
         if (!product1.getPhoto().equals("default.jpg")) {
             //删除图片
             file = new File("E:/images/sms/product/" + product1.getPhoto());
@@ -201,6 +224,7 @@ public class ProductService {
                 file.delete();
             }
         }
+
         int res = productMapper.delete(product);
         if (res == 1) {
             List<Product> list = productMapper.queryGreaterThan(new CompareObj("warn_count","count"));
@@ -209,6 +233,9 @@ public class ProductService {
             return new Result(2,"删除失败",null,null);
         }
     }
+    /**
+     * @Author lzc
+     * */
     //修改快过期的商品
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
     public Result editWillGoBadProduct(Product product, HttpServletRequest request) {
@@ -266,6 +293,9 @@ public class ProductService {
 
 
     //增删改查
+    /**
+     * @Author lzc
+     * */
     @Transactional(isolation = Isolation.DEFAULT,timeout = 5)
     public Result addProduct(Product product, HttpServletRequest request) {
         //验证是否登录
@@ -277,6 +307,7 @@ public class ProductService {
         if (!user.getRole().getProductInsert()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
         product.setId(product.getId() + new Date().getTime());
         product.setPhoto("default.jpg");
         product.setParentId(user.getId());

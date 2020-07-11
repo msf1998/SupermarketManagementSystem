@@ -20,6 +20,9 @@ public class ProductController {
     private ProductService productService;
 
 
+    /**
+     * @Author dyz
+    * */
     @RequestMapping("/get")
     public Result getProduct(@RequestBody Product product,HttpServletRequest request) {
         try {
@@ -49,6 +52,9 @@ public class ProductController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+    /**
+     * @Author lzc
+     * */
     //导出进货单
     @RequestMapping("/leading-out/purchase-order")
     public Result createPurchaseOrder( HttpServletRequest request) {
@@ -60,6 +66,9 @@ public class ProductController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+    /**
+    * @Author lzc
+     * */
     //删除库存不足的商品
     @RequestMapping("/delete/less-than/warn-count")
     public Result deleteCountLessThanWarnCountProduct(@RequestBody Product product, HttpServletRequest request) {
@@ -70,6 +79,9 @@ public class ProductController {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);        }
     }
+    /**
+     * @Author lzc
+     * */
     //修改将要过期的商品
     @RequestMapping("/edit/will/go-bad")
     public Result editWillGoBadProduct(@RequestBody Product product, HttpServletRequest request) {
@@ -99,6 +111,9 @@ public class ProductController {
     }
 
     //增删改查
+    /**
+     * @Author lzc
+     * */
     @RequestMapping("/add")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result addProduct(@RequestBody  Product product, HttpServletRequest request) {
@@ -132,6 +147,9 @@ public class ProductController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+    /**
+    * @Author lzc
+    * */
     @RequestMapping("/list")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result listProducts(@RequestBody Product product, HttpServletRequest request) {

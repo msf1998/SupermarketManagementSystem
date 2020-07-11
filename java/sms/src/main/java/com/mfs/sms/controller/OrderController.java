@@ -28,6 +28,9 @@ public class OrderController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+    /**
+     * @Author dyz
+     * */
     @RequestMapping("/pay")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result createOrder(@RequestBody SaleTo saleTo, HttpServletRequest request) {

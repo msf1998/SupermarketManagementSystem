@@ -61,6 +61,9 @@ public class OrderService {
         }
         return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
+    /**
+     * @Author dyz
+     * */
     //创建订单完成交易
     @Transactional(isolation = Isolation.REPEATABLE_READ,timeout = 5)
     public Result createOrder(SaleTo saleTo, HttpServletRequest request) {
@@ -98,12 +101,12 @@ public class OrderService {
         }
         if (saleTo.getSale() == true) {   //商品销售
             //创建订单
-            Order order = new Order(null,null,sum,new Date(),number.getId(),null,userId,null,null,null);
+            Order order = new Order(null,"商品销售",sum,new Date(),number.getId(),null,userId,null,null,null);
             int res = orderMapper.addAndReturnId(order);
             if (res != 1) {
                 int i = 1/0;
             }
-            System.out.println(order.getId());
+            //System.out.println(order.getId());
             //创建订单详情
             OrderDetail orderDetail;
             for (Product product : list) {
