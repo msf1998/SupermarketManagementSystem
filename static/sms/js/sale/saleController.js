@@ -51,6 +51,7 @@ app.controller("saleController", function ($cookieStore, $scope, saleService) {
                     if (f == true) {
                         $scope.data.productList.push(p)
                     }
+                    $scope.data.sum  = $scope.data.sum + (p.outPrice * p.count);
                 } else {
                     alert(p.name + "是" + (p.typeId == 1 ? "积分兑换":"正常销售") + "商品")
                 }
@@ -100,6 +101,8 @@ app.controller("saleController", function ($cookieStore, $scope, saleService) {
 
     $scope.change = function() {
         $scope.data.control.sale = !$scope.data.control.sale
+        $scope.data.productList = []
+        $scope.data.sum = 0
     }
 
     $scope.editMe = function() {

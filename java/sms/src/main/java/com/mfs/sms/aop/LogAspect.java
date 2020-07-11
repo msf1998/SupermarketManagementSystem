@@ -65,7 +65,7 @@ public class LogAspect {
             logMapper.add(log);
         }
     }
-    //@AfterThrowing(value = "pointcut()",throwing = "e")
+    @AfterThrowing(value = "pointcut()",throwing = "e")
     public void afterThrowing(JoinPoint joinPoint,Throwable e) {
         if (!(joinPoint.getSignature().getName().contains("checkExist") || joinPoint.getSignature().getName().contains("register"))) {
             Log log = Log.getLog();

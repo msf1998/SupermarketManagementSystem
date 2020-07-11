@@ -21,10 +21,10 @@ public class Main {
         //generatorKey();
 
         //生成证书
-        //createAuthority();
+        createAuthority();
 
         //查看证书内容
-        showAuthorityContent();
+        //showAuthorityContent();
     }
 
     private static void createAuthority() {

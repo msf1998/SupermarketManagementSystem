@@ -289,6 +289,7 @@ app.controller("productController", function ($cookieStore, $scope, productServi
                     $scope.data.control.nextHide = true;
                 }
                 $scope.data.productList = response.data.object;
+                alert(response.data.describe)
             } else {
                 alert(response.data.describe)
             }
@@ -312,6 +313,7 @@ app.controller("productController", function ($cookieStore, $scope, productServi
                     $scope.data.control.nextHide = true;
                 }
                 $scope.data.productList = response.data.object;
+                alert(response.data.describe)
             } else {
                 alert(response.data.describe)
             }
@@ -343,8 +345,10 @@ app.controller("productController", function ($cookieStore, $scope, productServi
                         $cookieStore.remove("token");
                         $cookieStore.put("token", response.data.token);
                         $scope.data.user = response.data.object;
+                        alert(response.data.describe)
+                    } else {
+                        alert(response.data.describe)
                     }
-                    alert(response.data.describe)
                 })
             } else {
                 productService.editMe1(form).then(function(response) {
