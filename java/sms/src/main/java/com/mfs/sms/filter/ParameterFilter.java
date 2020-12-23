@@ -1,5 +1,7 @@
 package com.mfs.sms.filter;
 
+import com.mfs.sms.utils.log.LogUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.servlet.*;
@@ -14,12 +16,11 @@ import java.util.Map;
  * */
 @Component
 public class ParameterFilter implements Filter {
-    @Value("${custom.log.enabled}")
-    private boolean enabled;
+    @Autowired
+   private LogUtil logUtil;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (enabled) {
-            String log = new Date().toLocaleString() + " " + "CUSTOM" + "    " + "mfs" + "   --- " + this.getClass().getName() + "   :   ";
+            String log  = "";
             HttpServletRequest re = (HttpServletRequest) request;
             Map<String, String[]> map = re.getParameterMap();
             log += re.getMethod() + " " + re.getRequestURI() + "    parameters={";
@@ -27,8 +28,7 @@ public class ParameterFilter implements Filter {
                 log += entry.getKey() + "=" + entry.getValue()[0] + ",";
             }
             log += "}";
-            System.out.println(log);
-        }
+            logUtil.log(log,this.getClass());
         chain.doFilter(request, response);
     }
 }

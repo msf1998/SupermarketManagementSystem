@@ -122,13 +122,14 @@ public class UserController {
      * 登录
      * */
     @RequestMapping("/login")
-    public void cacheLogin(User user) {
+    public String cacheLogin(User user) {
         Result result = null;
         try {
             result = userService.cacheLogin(user);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return "index";
     }
 
     @RequestMapping("/check")

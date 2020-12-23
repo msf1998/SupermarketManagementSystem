@@ -70,8 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().formLogin()
                 //转发登录请求以完成更多额外操作
                 .successForwardUrl("/api/user/login")
-                //指定登录页面和登陆成功跳转页面
-                .defaultSuccessUrl("/index",false)
+                //指定登录页面和登陆成功跳转页面.defaultSuccessUrl("/index",false)
                 .loginPage("/login").permitAll()
 
                 //登出配置

@@ -1,11 +1,11 @@
 package com.mfs.sms.aop;
 
-import com.mfs.sms.mapper.LogMapper;
 import com.mfs.sms.mapper.UserMapper;
 import com.mfs.sms.pojo.Log;
 import com.mfs.sms.pojo.User;
 import com.mfs.sms.utils.CryptUtil;
 import com.mfs.sms.utils.RequestUtil;
+import com.mfs.sms.utils.log.LogUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -15,14 +15,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Date;
 
-//@Component
-//@Aspect
+@Component
+@Aspect
 public class LogAspect {
     @Autowired
-    private LogMapper logMapper;
+    private LogUtil logUtil;
 
     @Pointcut(value = "execution(* com.mfs.sms.serviceImpl.*.*(..))")
     private void pointcut(){}
@@ -43,12 +44,10 @@ public class LogAspect {
     }*/
     @AfterReturning(value = "pointcut()",returning = "object")
     public void afterReturning(JoinPoint joinPoint, Object object) {
-        if (!(joinPoint.getSignature().getName().contains("checkExist") || joinPoint.getSignature().getName().contains("register"))) {
-            Log log = Log.getLog();
-            log.setId(null);
+        if (!(joinPoint.getSignature().getName().contains("checkExist") || joinPoint.getSignature().getName().contains("register") || joinPoint.getSignature().getName().contains("delegatingCheckUser"))) {
+            Log log = new Log();
             log.setAction("{method:'"+ joinPoint.getSignature().getName() +"',args:'" + Arrays.toString(joinPoint.getArgs()) + "'}");
-            log.setResult(object.toString().length() > 10240 ? object.toString().substring(0,10000) : object.toString());
-            log.setCreateTime(new Date());
+            log.setResult(object.toString());
             String creator = null;
             if (joinPoint.getSignature().getName().contains("login")) {
                 Object[] args = joinPoint.getArgs();
@@ -57,25 +56,23 @@ public class LogAspect {
             } else {
                 Object[] args = joinPoint.getArgs();
                 for (Object o : args) {
-                    if (o.getClass().getName().contains("request")) {
-                        HttpServletRequest request = (HttpServletRequest)o;
-                        String userId = RequestUtil.getUserId(request);
+                    if (o.getClass().getName().contains("principal")) {
+                        Principal principal = (Principal)o;
+                        String userId = principal.getName();
                         creator = userId == null ? "未知" : userId;
                     }
                 }
             }
             log.setCreator(creator);
-            logMapper.add(log);
+            logUtil.log(log.toString(),this.getClass());
         }
     }
     @AfterThrowing(value = "pointcut()",throwing = "e")
     public void afterThrowing(JoinPoint joinPoint,Throwable e) {
         if (!(joinPoint.getSignature().getName().contains("checkExist") || joinPoint.getSignature().getName().contains("register"))) {
-            Log log = Log.getLog();
-            log.setId(null);
+            Log log = new Log();
             log.setAction("{method:'"+ joinPoint.getSignature().getName() +"',args:'" + Arrays.toString(joinPoint.getArgs()) + "'}");
-            log.setResult(e.getMessage().length() > 1000 ? e.getMessage().substring(0,1000) : e.getMessage());
-            log.setCreateTime(new Date());
+            log.setResult(e.getMessage());
             String creator = null;
             if (joinPoint.getSignature().getName().contains("login")) {
                 Object[] args = joinPoint.getArgs();
@@ -84,15 +81,15 @@ public class LogAspect {
             } else {
                 Object[] args = joinPoint.getArgs();
                 for (Object o : args) {
-                    if (o.getClass().getName().contains("request")) {
-                        HttpServletRequest request = (HttpServletRequest)o;
-                        String userId = RequestUtil.getUserId(request);
+                    if (o.getClass().getName().contains("principal")) {
+                        Principal principal = (Principal)o;
+                        String userId = principal.getName();
                         creator = userId == null ? "未知" : userId;
                     }
                 }
             }
             log.setCreator(creator);
-            logMapper.add(log);
+            logUtil.log(log,this.getClass());
         }
     }
 
