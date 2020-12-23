@@ -11,5 +11,5 @@ public interface UserMapper {
     int delete(User user);
     int update(User user);
     List<User> query(User user);
-    User queryById(String id);
+    User queryByUsername(String id);
 }

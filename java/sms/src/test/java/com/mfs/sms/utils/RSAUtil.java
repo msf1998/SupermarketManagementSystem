@@ -23,7 +23,7 @@ public class RSAUtil {
         //generatorKey();
 
         //生成证书
-        //createAuthority();
+        createAuthority();
 
         //查看证书内容
         showAuthorityContent();

@@ -28,12 +28,7 @@
     License: https://templatemag.com/license/
   ======================================================= -->
   <!-- <script src="https://cdn.bootcdn.net/ajax/libs/angular.js/1.2.0/angular-route.js"></script> -->
-  <script src="./js/angular.min.js"></script>
-  <script src="./js/angular-cookies.min.js"></script>
   <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
-  <script src="./js/base.js"></script>
-  <script src="./js/user/userService.js"></script>
-  <script src="./js/user/userController.js"></script>
 </head>
 
 <body ng-app="dashio" ng-controller="userController" ng-init="user = {}">
@@ -49,7 +44,6 @@
           <br>
           <input type="password" class="form-control" placeholder="密码"  ng-model="user.password">
           <label class="checkbox">
-            <input type="checkbox" value="remember-me"> 记住密码
             <span class="pull-right">
             <a data-toggle="modal" href="login.html#myModal"> 忘记密码?</a>
             </span>

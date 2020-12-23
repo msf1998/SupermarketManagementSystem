@@ -3,7 +3,7 @@ package com.mfs.sms.controller;
 import com.mfs.sms.pojo.CompareObj;
 import com.mfs.sms.pojo.Product;
 import com.mfs.sms.pojo.Result;
-import com.mfs.sms.service.ProductService;
+import com.mfs.sms.serviceImpl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

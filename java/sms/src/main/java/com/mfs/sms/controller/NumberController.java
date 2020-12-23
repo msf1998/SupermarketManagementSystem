@@ -2,8 +2,7 @@ package com.mfs.sms.controller;
 
 import com.mfs.sms.pojo.Number;
 import com.mfs.sms.pojo.Result;
-import com.mfs.sms.pojo.Type;
-import com.mfs.sms.service.NumberService;
+import com.mfs.sms.serviceImpl.NumberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

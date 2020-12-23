@@ -11,19 +11,20 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Date;
 
-@Component
-@Aspect
+//@Component
+//@Aspect
 public class LogAspect {
     @Autowired
     private LogMapper logMapper;
 
-    @Pointcut(value = "execution(* com.mfs.sms.service.*.*(..))")
+    @Pointcut(value = "execution(* com.mfs.sms.serviceImpl.*.*(..))")
     private void pointcut(){}
 
     /*前置通知
@@ -33,13 +34,15 @@ public class LogAspect {
         Object[] args = joinPoint.getArgs();
         System.out.println(Arrays.toString(args));
     }*/
-    /*后置通知
-    @After("pointcut()")
+    //后置通知
+    /*@After("pointcut()")
     public void after(JoinPoint joinPoint) {
         System.out.println("this is after advice");
+        String kind = joinPoint.getKind();
+        JoinPoint.StaticPart staticPart = joinPoint.getStaticPart();
     }*/
     @AfterReturning(value = "pointcut()",returning = "object")
-    public void afterReturning(JoinPoint joinPoint,Object object) {
+    public void afterReturning(JoinPoint joinPoint, Object object) {
         if (!(joinPoint.getSignature().getName().contains("checkExist") || joinPoint.getSignature().getName().contains("register"))) {
             Log log = Log.getLog();
             log.setId(null);
@@ -50,7 +53,7 @@ public class LogAspect {
             if (joinPoint.getSignature().getName().contains("login")) {
                 Object[] args = joinPoint.getArgs();
                 User user = (User)args[0];
-                creator = (user.getId() == null ? "未知" : user.getId());
+                creator = (user.getUsername() == null ? "未知" : user.getUsername());
             } else {
                 Object[] args = joinPoint.getArgs();
                 for (Object o : args) {
@@ -77,7 +80,7 @@ public class LogAspect {
             if (joinPoint.getSignature().getName().contains("login")) {
                 Object[] args = joinPoint.getArgs();
                 User user = (User)args[0];
-                creator = (user.getId() == null ? "未知" : user.getId());
+                creator = (user.getUsername() == null ? "未知" : user.getUsername());
             } else {
                 Object[] args = joinPoint.getArgs();
                 for (Object o : args) {
@@ -93,8 +96,8 @@ public class LogAspect {
         }
     }
 
-    /*环绕通知
-    @Around(value = "pointcut()")
+    //环绕通知
+    /*@Around(value = "pointcut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         System.out.println("this is around advice before");
         Object proceed = joinPoint.proceed();

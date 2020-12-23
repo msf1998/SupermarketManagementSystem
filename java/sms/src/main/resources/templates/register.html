@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="Dashboard">
+  <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+  <title>注册</title>
+
+  <!-- Favicons -->
+  <link th:href="@{/img/favicon.png}" rel="icon">
+  <link th:href="@{/img/apple-touch-icon.png}" rel="apple-touch-icon">
+
+  <!-- Bootstrap core CSS -->
+  <link th:href="@{/lib/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <!--external css-->
+  <link th:href="@{/lib/font-awesome/css/font-awesome.css}" rel="stylesheet" />
+  <!-- Custom styles for this template -->
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+  <link th:href="@{/css/style-responsive.css}" rel="stylesheet">
+  
+  <!-- =======================================================
+    Template Name: Dashio
+    Template URL: https://templatemag.com/dashio-bootstrap-admin-template/
+    Author: TemplateMag.com
+    License: https://templatemag.com/license/
+  ======================================================= -->
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/angular.js/1.2.0/angular-route.js"></script> -->
+  <script th:src="@{https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js}"></script>
+</head>
+  <body>
+  <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+  <div id="login-page">
+    <div class="container">
+      <form class="form-login" th:action="@{/api/user/register}" th:method="post">
+        <h2 class="form-login-heading">注册</h2>
+        <div id="result-msg" style="margin: 0 auto;background-color: rgba(255,230,0,0.78);text-align: center" th:if="${result} ne null">
+          <span th:utext="${result.describe}">hello:</span>
+        </div>
+        <div class="login-wrap">
+          <input name="username" type="email" maxlength="32" class="form-control" placeholder="邮箱" autofocus required>
+          <br>
+          <input id="password" name="password" type="password"  class="password form-control" placeholder="密码" required>
+          <br>
+          <input id="password1" name="password1" type="password" class="password form-control" placeholder="确认密码" required>
+          <br>
+          <input name="name" type="text" class="form-control" maxlength="12" placeholder="称呼" autofocus required>
+          <br>
+          <input name="credential" type="password" class="form-control" placeholder="数字证书" autofocus required>
+          <br>
+          <button type="submit" class="btn btn-theme btn-block" onclick="return md5EncodePassword() && confirmPassword()" >注册</button>
+          <a th:href="@{/login}" class="btn btn-theme btn-block" >去登陆</a>
+        </div>
+      </form>
+      <br>
+      <hr>
+    </div>
+  </div>
+  <!-- js placed at the end of the document so the pages load faster -->
+  <script th:src="@{/lib/jquery/jquery.min.js}"></script>
+  <script th:src="@{/lib/bootstrap/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/register.js}"></script>
+  <script th:src="@{/js/base.js}"></script>
+  <!--BACKSTRETCH-->
+  <!-- You can use an image of whatever size. This script will stretch to fit in any screen size.-->
+  <script type="text/javascript" th:src="@{/lib/jquery.backstretch.min.js}"></script>
+  <script>
+    $.backstretch("[[${#httpServletRequest.contextPath}]]/img/login-bg.jpg" , {
+      speed: 500
+    });
+  </script>
+</body>
+</html>

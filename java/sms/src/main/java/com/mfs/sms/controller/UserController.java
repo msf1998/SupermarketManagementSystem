@@ -2,17 +2,21 @@ package com.mfs.sms.controller;
 
 import com.mfs.sms.pojo.Result;
 import com.mfs.sms.pojo.User;
-import com.mfs.sms.service.UserService;
+import com.mfs.sms.serviceImpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Response;
+import java.security.Principal;
 
 @RequestMapping("/api/user")
-@RestController
+@Controller
 public class UserController {
     @Autowired
     private UserService userService;
@@ -82,38 +86,52 @@ public class UserController {
     }
 
     @RequestMapping("/get")
-    public Result getMe(HttpServletRequest request) {
+    public String getMe(Principal principal, Model model) {
+        Result result = null;
         try {
-            return userService.getMe(request);
+             result = userService.getMe(principal);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
+            result = new Result(3,"服务器异常",null,null);
         }
+        model.addAttribute("user",(User)result.getObject());
+        return "";
     }
 
-    @RequestMapping("/login")
-    //@CrossOrigin(allowCredentials = "true",origins = {"*"})
-    public Result login(@RequestBody User user, HttpServletResponse response) {
-        try {
-             return userService.login(user,response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
-        }
-    }
-
+    /**
+     * 注册
+     * */
     @RequestMapping("/register")
     //@CrossOrigin(allowCredentials = "true",origins = {"*"})
-    public Result register(@RequestBody User user) {
+    public String register(User user,Model model,HttpServletResponse response,HttpServletRequest request)  {
+        Result result = null;
         try {
-            return userService.register(user);
+             result = userService.register(user);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
+            result = new Result(3,"服务器异常",null,null);
+        }
+        model.addAttribute(result);
+        if (result.getStatus() == 1) {
+            response.setHeader("refresh","2;url=" + request.getContextPath() + "/login");
+        }
+        return "register";
+    }
+
+    /**
+     * 登录
+     * */
+    @RequestMapping("/login")
+    public void cacheLogin(User user) {
+        Result result = null;
+        try {
+            result = userService.cacheLogin(user);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    @RequestMapping("/checkExist")
+    @RequestMapping("/check")
     //@CrossOrigin(allowCredentials = "true",origins = {"*"})
     public Result checkExist(@RequestBody User user) {
         //System.out.println(user);
@@ -124,4 +142,5 @@ public class UserController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
 }

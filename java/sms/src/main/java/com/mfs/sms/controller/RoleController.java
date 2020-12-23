@@ -2,7 +2,7 @@ package com.mfs.sms.controller;
 
 import com.mfs.sms.pojo.Result;
 import com.mfs.sms.pojo.Role;
-import com.mfs.sms.service.RoleService;
+import com.mfs.sms.serviceImpl.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
