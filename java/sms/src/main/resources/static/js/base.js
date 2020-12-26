@@ -16,3 +16,21 @@ function getMe(contextPath,_csrf) {
         }
     })
 }
+
+function defaultAjaxRequest(data,url) {
+    $.ajax({
+        url: url,
+        type: "post",
+        async: true,
+        contentType: false,
+        processData:false,
+        data: data,
+        success: function (response) {
+            if (response.status == 1) {
+                location.reload()
+            } else {
+                alert(response.describe)
+            }
+        }
+    })
+}

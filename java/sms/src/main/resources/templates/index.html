@@ -331,18 +331,18 @@
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <form class="form-horizontal" role="form" th:action="@{/api/user/edit/head}" enctype="multipart/form-data" method="post">
+                            <form class="form-horizontal" role="form" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">头像</label>
                                     <div class="col-sm-10">
-                                        <input type="file" class="form-control" name="head" onchange="checkFile(this.value)">
+                                        <input id="leading-in-head-input" type="file" class="form-control" name="head" onchange="checkFile(this.value)">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">
                                         取消
                                     </button>
-                                    <button type="submit" id="leading-in-head-btn" class="btn  btn-danger" disabled>
+                                    <button type="button" id="leading-in-head-btn" class="btn  btn-danger" onclick="editHead()" disabled>
                                         修改
                                     </button>
                                 </div>
@@ -503,7 +503,6 @@
     $(document).ready(function () {
         getMe(contextPath,_csrf)
     })
-
     function addProduct() {
         var id = $("#product-id").val();
         var count = $("#product-count").val();

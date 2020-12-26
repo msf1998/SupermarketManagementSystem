@@ -71,7 +71,8 @@ public class UserController {
      * 修改用户头像
      * */
     @RequestMapping("/edit/head")
-    public Result editHead(@RequestParam("head") MultipartFile head, Principal principal) {
+    @ResponseBody
+    public Result editHead(@RequestBody MultipartFile head, Principal principal) {
         try {
             return userService.editHead(principal,head);
         } catch (Exception e) {

@@ -18,7 +18,7 @@ public class User {
      * 用户基本信息
      * */
     //id：主键，数据库自增
-    private int id;
+    private Integer id;
     //账号：邮箱，长度最长32
     private String username;
     //密码：最长255

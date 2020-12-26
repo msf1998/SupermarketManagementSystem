@@ -14,6 +14,7 @@ public class FilterConfig {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setOrder(Integer.MIN_VALUE + 100);
         filterRegistrationBean.addUrlPatterns("/*");
+        filterRegistrationBean.setEnabled(true);
         filterRegistrationBean.setFilter(filter);
         return filterRegistrationBean;
     }

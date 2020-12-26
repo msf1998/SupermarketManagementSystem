@@ -25,7 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        //web.debug(true);
+        web.debug(true);
         super.configure(web);
     }
 

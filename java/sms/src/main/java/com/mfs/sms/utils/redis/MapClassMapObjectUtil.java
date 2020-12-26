@@ -45,6 +45,7 @@ public class MapClassMapObjectUtil {
      * @return T
      * */
     public static  <T> T map(Map<? extends Object, ? extends Object> map, Class<T> clazz) throws TypeException {
+        if (map == null || clazz == null) return null;
         return MYSELF.mapToObject(map, clazz);
     }
 

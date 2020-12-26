@@ -8,6 +8,7 @@ import com.mfs.sms.pojo.User;
 import com.mfs.sms.utils.CryptUtil;
 import com.mfs.sms.utils.RequestUtil;
 import com.mfs.sms.utils.SaltGenerator;
+import com.mfs.sms.utils.log.LogUtil;
 import com.mfs.sms.utils.redis.MapClassMapObjectUtil;
 import jdk.nashorn.internal.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class UserService {
     private RoleMapper roleMapper;
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
+    @Autowired
+    private LogUtil logUtil;
 
     @Transactional(isolation = Isolation.DEFAULT,timeout = 20)
     public Result addUser(User user, HttpServletRequest request) {
@@ -204,7 +207,7 @@ public class UserService {
     public Result editHead(Principal principal,MultipartFile head) throws Exception{
         //验证用户合法性
         String username = principal.getName();
-        User user = getUserByUsername(username);
+        User user = quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
@@ -233,6 +236,27 @@ public class UserService {
         is.close();
         os.close();
 
+        //修改数据库中用户的头像信息
+        if (user.getHead().equals("default.jpg")) {
+            user = new User();
+            user.setUsername(username);
+            user.setHead(name);
+            int update = userMapper.update(user);
+            if (update == 1) {
+                Boolean delete = redisTemplate.delete("login.user." + username);
+                if (delete) {
+                    return new Result(1,"头像修改成功",null,null);
+                }
+                logUtil.log("删除缓存失败",this.getClass());
+                return new Result(2,"修改成功,下次登陆生效",null,null);
+            } else {
+                boolean delete = file.delete();
+                if (!delete) {
+                    logUtil.log("删除" + name + "失败",this.getClass());
+                }
+                return new Result(2,"修改失败",null,null);
+            }
+        }
         return new Result(1,"头像修改成功",null,null);
     }
 
@@ -244,7 +268,7 @@ public class UserService {
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
     public Result getMe(Principal principal) {
         String username = principal.getName();
-        User user = getUserByUsername(username);
+        User user = quicklyGetUserByUsername(username);
         if (user != null) {
             return new Result(1,"查询成功",user,null);
         }
@@ -256,7 +280,7 @@ public class UserService {
      * @param username 用户名
      * @return 如果找到则返回User对象，找不到则返回null
      * */
-    private User getUserByUsername(String username) {
+    private User quicklyGetUserByUsername(String username) {
         //从缓存中获取用户信息
         ValueOperations<String, Object> opsForValue = redisTemplate.opsForValue();
         Object map = opsForValue.get("login.user." + username);
@@ -267,7 +291,6 @@ public class UserService {
         } catch (MapClassMapObjectUtil.TypeException e) {
             e.printStackTrace();
         }
-        System.out.println(user);
         if (user != null) {
             redisTemplate.expire("login.user." + username,30,TimeUnit.MINUTES);
             return user;
