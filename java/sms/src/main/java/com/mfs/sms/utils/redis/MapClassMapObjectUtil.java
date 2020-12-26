@@ -1,86 +1,18 @@
-package com.mfs.sms;
+package com.mfs.sms.utils.redis;
 
-import lombok.Data;
-import lombok.ToString;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-
-import javax.print.attribute.standard.Finishings;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-@SpringBootTest
-public class RTest {
-    @Autowired
-    RedisTemplate<String, Object> redisTemplate;
+/**
+ * 完成从map到Java对象的映射
+ * */
+public class MapClassMapObjectUtil {
+    private static final String BOOLEAN = boolean.class.getTypeName();
+    private static final String BOOLEAN_OBJECT = Boolean.class.getTypeName();
 
-    @org.junit.jupiter.api.Test
-    public void t() throws CollectionClassMapObjectUtil.TypeException {
-        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
-        ops.set("he", new Test(""));
-        Object he = ops.get("he");
-        Test map = new CollectionClassMapObjectUtil().map((Map<?, ?>) he, Test.class);
-        System.out.println(map);
-    }
-}
-
-@Data
-@ToString
-class Test {
-    private byte a;
-    private Byte b;
-    private short c;
-    private Short d;
-    private char e;
-    private int f;
-    private float g;
-    private double h;
-    private long i;
-    private Long j;
-    private List<Test> list = new ArrayList<>();
-    private Test[] tests = new Test[10];
-    private Test test;
-
-    public Test() {
-
-    }
-
-    public Test(String msg) {
-        a = 1;
-        b = 2;
-        c = 3;
-        d = 4;
-        e = '5';
-        f = 6;
-        g = (float) 7.0;
-        h = 8.0;
-        i = 9;
-        j = 10l;
-        list.add(new Test(1));
-        tests[0] = new Test(2);
-        test = new Test();
-    }
-
-    public Test(int i) {
-        a = 1;
-        b = 2;
-        c = 3;
-        d = 4;
-        e = '5';
-        f = 6;
-        g = (float) 7.0;
-        h = 8.0;
-        i = 9;
-        j = 10l;
-    }
-}
-
-class CollectionClassMapObjectUtil {
     private static final String BYTE = byte.class.getTypeName();
     private static final String BYTE_OBJECT = Byte.class.getTypeName();
 
@@ -103,9 +35,17 @@ class CollectionClassMapObjectUtil {
     private static final String LONG_OBJECT = Long.class.getTypeName();
 
     private static final String STRING = String.class.getTypeName();
+    private static final MapClassMapObjectUtil MYSELF = new MapClassMapObjectUtil();
 
-    public <T> T map(Map<? extends Object, ? extends Object> object, Class<T> clazz) throws TypeException {
-        return mapToObject(object, clazz);
+    /**
+     * 完成从一个map对象到指定Java对象的映射
+     * @param map 原map对象
+     * @param clazz 目标java对象的class对象
+     * @param <T> 目标java对象的类型
+     * @return T
+     * */
+    public static  <T> T map(Map<? extends Object, ? extends Object> map, Class<T> clazz) throws TypeException {
+        return MYSELF.mapToObject(map, clazz);
     }
 
     /**
@@ -127,7 +67,9 @@ class CollectionClassMapObjectUtil {
                     continue;
                 }
                 String valueTypeName = field.getType().getTypeName();
-                if (valueTypeName.equals(BYTE) || valueTypeName.equals(BYTE_OBJECT)) {
+                if (valueTypeName.equals(BOOLEAN) || valueTypeName.equals(BOOLEAN_OBJECT)) {
+                    field.set(t, Boolean.valueOf(value.toString()));
+                } else if (valueTypeName.equals(BYTE) || valueTypeName.equals(BYTE_OBJECT)) {
                     field.set(t, Byte.valueOf(value.toString()));
                 } else if (valueTypeName.equals(SHORT) || valueTypeName.equals(SHORT_OBJECT)) {
                     field.set(t, Short.valueOf(value.toString()));
@@ -143,6 +85,8 @@ class CollectionClassMapObjectUtil {
                     field.set(t, value.toString());
                 } else if (valueTypeName.equals(LONG) || valueTypeName.equals(LONG_OBJECT)) {
                     field.set(t, Long.valueOf(value.toString()));
+                } else if (value instanceof Long && (field.getType().getTypeName().equals(Date.class.getTypeName()) )){
+                    field.set(t,new Date((Long) value));
                 } else {
                     if (value instanceof Map) {
                         field.set(t, mapToObject((Map<Object, Object>) value, field.getType()));
@@ -196,7 +140,9 @@ class CollectionClassMapObjectUtil {
                     tem.add(null);
                 }
                 String value = next.toString();
-                if (valueTypeName.equals(BYTE) || valueTypeName.equals(BYTE_OBJECT)) {
+                if (valueTypeName.equals(BOOLEAN) || valueTypeName.equals(BOOLEAN_OBJECT)) {
+                    tem.add(Boolean.valueOf(value));
+                } else if (valueTypeName.equals(BYTE) || valueTypeName.equals(BYTE_OBJECT)) {
                     tem.add(Byte.valueOf(value));
                 } else if (valueTypeName.equals(SHORT) || valueTypeName.equals(SHORT_OBJECT)) {
                     tem.add(Short.valueOf(value));
@@ -212,6 +158,8 @@ class CollectionClassMapObjectUtil {
                     tem.add(value);
                 } else if (valueTypeName.equals(LONG) || valueTypeName.equals(LONG_OBJECT)) {
                     tem.add(Long.valueOf(value.toString()));
+                } else if (next instanceof Long && (valueClass.getTypeName().equals(Date.class.getTypeName()) )){
+                    tem.add(new Date((Long) next));
                 } else {
                     if (next instanceof Map) {
                         tem.add(mapToObject((Map<Object, Object>) next, valueClass));
@@ -243,7 +191,9 @@ class CollectionClassMapObjectUtil {
                     continue;
                 }
                 String value = next.toString();
-                if (valueTypeName.equals(BYTE) || valueTypeName.equals(BYTE_OBJECT)) {
+                if (valueTypeName.equals(BOOLEAN) || valueTypeName.equals(BOOLEAN_OBJECT)) {
+                    Array.set(array, i ++ , Boolean.valueOf(value));
+                } else if (valueTypeName.equals(BYTE) || valueTypeName.equals(BYTE_OBJECT)) {
                     Array.set(array, i++, Byte.valueOf(value));
                 } else if (valueTypeName.equals(SHORT) || valueTypeName.equals(SHORT_OBJECT)) {
                     Array.set(array, i++, Short.valueOf(value));
@@ -256,10 +206,12 @@ class CollectionClassMapObjectUtil {
                 } else if (valueTypeName.equals(DOUBLE) || valueTypeName.equals(DOUBLE_OBJECT)) {
                     Array.set(array, i++, Double.valueOf(value));
                 } else if (valueTypeName.equals(STRING)) {
-                    Array.set(array, i++, value.toString());
+                    Array.set(array, i++, value);
                 } else if (valueTypeName.equals(LONG) || valueTypeName.equals(LONG_OBJECT)) {
                     Array.set(array, i++, Long.valueOf(value));
-                } else {
+                } else if (next instanceof Long && (valueTypeName.equals(Date.class.getTypeName()) )){
+                    Array.set(array,i ++, new Date((Long) next));
+                }else {
                     if (next instanceof Map) {
                         Array.set(array, i++, mapToObject((Map<Object, Object>) next, clazz.getComponentType()));
                     } else {

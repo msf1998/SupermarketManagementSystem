@@ -3,18 +3,18 @@ package com.mfs.sms.pojo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import lombok.ToString;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Role implements Comparable<Role>{
     private Integer id;
     private String name;
     private Date createTime;
     private String parentId;
-    private User parent;
     //对商品的操作权限
     private Boolean productInsert;
     private Boolean productDelete;
@@ -49,6 +49,7 @@ public class Role implements Comparable<Role>{
     //为实现业务逻辑所需的属性
     private Integer page;
     private String order;
+    private Integer offset;
 
     @Override
     public int compareTo(Role r) {

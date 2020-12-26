@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor  //全参构造方法
 @NoArgsConstructor   //无参构造方法
 @ToString
-public class User implements Serializable {
+public class User {
 
     /**
      * 用户基本信息

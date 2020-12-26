@@ -8,9 +8,9 @@ import com.mfs.sms.pojo.User;
 import com.mfs.sms.utils.CryptUtil;
 import com.mfs.sms.utils.RequestUtil;
 import com.mfs.sms.utils.SaltGenerator;
+import com.mfs.sms.utils.redis.MapClassMapObjectUtil;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -18,16 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -197,49 +193,47 @@ public class UserService {
         //System.out.println(list);
         return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Result editMe(MultipartFile head,String password,HttpServletRequest request) throws Exception{
-        String userId = RequestUtil.getUserId(request);
-        User user1 = userMapper.queryByUsername(userId);
-        if (user1 == null) {
+    
+    /**
+     * 修改当前登录用户的头像
+     * @param principal 登录主体
+     * @param head 上传的图片
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result editHead(Principal principal,MultipartFile head) throws Exception{
+        //验证用户合法性
+        String username = principal.getName();
+        User user = getUserByUsername(username);
+        if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
-        User u = new User();
-        u.setUsername(userId);
-        if (head != null) {
-            String name = head.getOriginalFilename();
-            if (!(name.endsWith(".jpg") || name.endsWith(".png"))) {
-                return new Result(2,"仅支持.jpg或者.png格式的图片",null,null);
-            }
-            name = userId + "" + new Date().getTime() + (name.endsWith(".jpg") ? ".jpg" : ".png");
-            File file = new File("E:/images/sms/head/" + name);
-            if (file.exists()) {
-                file.createNewFile();
-            }
-            InputStream is = head.getInputStream();
-            OutputStream os = new FileOutputStream(file);
-            byte[] b = new byte[1024];
-            int n = 0;
-            while ((n = is.read(b)) >= 0) {
-                os.write(b,0,n);
-            }
-            is.close();
-            os.close();
-            u.setHead(name);
-            user1.setHead(name);
+
+        //验证上传合法性
+        if (head == null) {
+            return new Result(2,"上传文件为空",null,null);
         }
-        if (password != null && !password.equals("")) {
-            String salt = SaltGenerator.generatorSalt();
-            u.setPassword(CryptUtil.getMessageDigestByMD5(password + "" + salt));
-            user1.setPassword(CryptUtil.getMessageDigestByMD5(password + "" + salt));
+        String name = head.getOriginalFilename();
+        if (!(name.endsWith(".jpg") || name.endsWith(".png"))) {
+            return new Result(2,"仅支持.jpg或者.png格式的图片",null,null);
         }
-        int res = userMapper.update(u);
-        if (res == 1) {
-            return new Result(1,"修改成功",user1,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
-        } else {
-            return new Result(1,"修改失败",null,null);
+        //保存图片到磁盘
+        name = username + (name.endsWith(".jpg") ? ".jpg" : ".png");
+        File file = new File("E:/images/sms/head/" + name);
+        if (!file.exists()) {
+            file.createNewFile();
         }
+        InputStream is = head.getInputStream();
+        OutputStream os = new FileOutputStream(file);
+        byte[] b = new byte[1024];
+        int n = 0;
+        while ((n = is.read(b)) >= 0) {
+            os.write(b,0,n);
+        }
+        is.close();
+        os.close();
+
+        return new Result(1,"头像修改成功",null,null);
     }
 
     /**
@@ -250,19 +244,42 @@ public class UserService {
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
     public Result getMe(Principal principal) {
         String username = principal.getName();
-        ValueOperations<String, Object> opsForValue = redisTemplate.opsForValue();
-        Object user = opsForValue.get("login.user." + username);
+        User user = getUserByUsername(username);
         if (user != null) {
-            opsForValue.set("login.user." + username, user,30,TimeUnit.MINUTES);
             return new Result(1,"查询成功",user,null);
         }
+        return new Result(2,"查询失败",null,null);
+    }
+
+    /**
+     * 快速获取指定用户（优先从redis缓存中获取，缓存中没有则从数据库中获取并存向缓存）
+     * @param username 用户名
+     * @return 如果找到则返回User对象，找不到则返回null
+     * */
+    private User getUserByUsername(String username) {
+        //从缓存中获取用户信息
+        ValueOperations<String, Object> opsForValue = redisTemplate.opsForValue();
+        Object map = opsForValue.get("login.user." + username);
+        //从缓存中获取的对象是LinkedHashMap类型的，所以要转化到我们需要的User类型
+        User user = null;
+        try {
+            user = MapClassMapObjectUtil.map((Map<String, Object>) map, User.class);
+        } catch (MapClassMapObjectUtil.TypeException e) {
+            e.printStackTrace();
+        }
+        System.out.println(user);
+        if (user != null) {
+            redisTemplate.expire("login.user." + username,30,TimeUnit.MINUTES);
+            return user;
+        }
+        //缓存中没有则从数据库获取
         User u = userMapper.queryByUsername(username);
         u.setPassword(null);
         if (user != null) {
             opsForValue.set("login.user." + username, u,30,TimeUnit.MINUTES);
-            return new Result(1,"查询成功",u,null);
+            return u;
         }
-        return new Result(2,"查询失败",null,null);
+        return null;
     }
 
     /**
@@ -354,7 +371,7 @@ public class UserService {
         //敏感信息不保存
         user.setPassword(null);
         ValueOperations opsForValue = redisTemplate.opsForValue();
-        opsForValue.set("login.user." + user.getUsername(),user,30, TimeUnit.MINUTES);
+        opsForValue.set("login.user." + user.getUsername(), user,30, TimeUnit.MINUTES);
         return new Result(1,"缓存成功",null,null);
     }
 

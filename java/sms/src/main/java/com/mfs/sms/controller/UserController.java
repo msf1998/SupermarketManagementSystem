@@ -13,6 +13,7 @@ import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.Response;
+import java.io.IOException;
 import java.security.Principal;
 
 @RequestMapping("/api/user")
@@ -66,36 +67,31 @@ public class UserController {
         }
     }
 
-    @RequestMapping("/edit/me1")
-    public Result editMe1(@RequestParam("head") MultipartFile head, @RequestParam("password") String password, HttpServletRequest request) {
+    /**
+     * 修改用户头像
+     * */
+    @RequestMapping("/edit/head")
+    public Result editHead(@RequestParam("head") MultipartFile head, Principal principal) {
         try {
-            return userService.editMe(head,password,request);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
-        }
-    }
-    @RequestMapping("/edit/me2")
-    public Result editMe2(@RequestParam("password") String password, HttpServletRequest request) {
-        try {
-            return userService.editMe(null,password,request);
+            return userService.editHead(principal,head);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
 
+    /**
+     * 获取当前登录用户的详细信息
+     * */
     @RequestMapping("/get")
-    public String getMe(Principal principal, Model model) {
-        Result result = null;
+    @ResponseBody
+    public Result getMe(Principal principal) {
         try {
-             result = userService.getMe(principal);
+             return userService.getMe(principal);
         } catch (Exception e) {
             e.printStackTrace();
-            result = new Result(3,"服务器异常",null,null);
+            return new Result(3,"服务器异常",null,null);
         }
-        model.addAttribute("user",(User)result.getObject());
-        return "";
     }
 
     /**
@@ -122,14 +118,14 @@ public class UserController {
      * 登录
      * */
     @RequestMapping("/login")
-    public String cacheLogin(User user) {
+    public void cacheLogin(User user,HttpServletRequest request,HttpServletResponse response){
         Result result = null;
         try {
             result = userService.cacheLogin(user);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "index";
+        response.setHeader("refresh","0;URL=" + request.getContextPath() + "/index");
     }
 
     @RequestMapping("/check")
