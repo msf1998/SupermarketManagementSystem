@@ -12,6 +12,6 @@ import lombok.ToString;
 public class SaleTo {
     private String[] productId;
     private Integer[] count;
-    private String numberId;
+    private String memberId;
     private Boolean sale;
 }

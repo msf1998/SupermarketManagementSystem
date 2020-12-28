@@ -5,28 +5,28 @@ import com.mfs.sms.pojo.Product;
 import com.mfs.sms.pojo.Result;
 import com.mfs.sms.serviceImpl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @RequestMapping("/api/product")
-@RestController
+@Controller
 public class ProductController {
     @Autowired
     private ProductService productService;
 
 
     /**
-     * @Author dyz
+     * 根据id获取商品
     * */
     @RequestMapping("/get")
-    public Result getProduct(@RequestBody Product product,HttpServletRequest request) {
+    @ResponseBody
+    public Result getProduct(Product product, Principal principal) {
         try {
-            return productService.getProduct(product,request);
+            return productService.getProduct(principal,product);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);

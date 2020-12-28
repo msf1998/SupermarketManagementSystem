@@ -15,18 +15,19 @@
     <link th:href="@{/img/apple-touch-icon.png}" href="../static/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Bootstrap core CSS -->
-    <link th:href="@{/lib/bootstrap/css/bootstrap.min.css}" href="../static/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/lib/bootstrap/css/bootstrap.min.css}" href="../static/lib/bootstrap/css/bootstrap.min.css"
+          rel="stylesheet">
     <!--external css-->
-    <link th:href="@{/lib/font-awesome/css/font-awesome.css}" href="../static/lib/font-awesome/css/font-awesome.css" rel="stylesheet"/>
-    <link rel="stylesheet" type="text/css" th:href="@{css/zabuto_calendar.css}" href="../static/css/zabuto_calendar.css">
-    <link rel="stylesheet" type="text/css" th:href="@{lib/gritter/css/jquery.gritter.css}" href="../static/lib/gritter/css/jquery.gritter.css"/>
+    <link th:href="@{/lib/font-awesome/css/font-awesome.css}" href="../static/lib/font-awesome/css/font-awesome.css"
+          rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" th:href="@{css/zabuto_calendar.css}"
+          href="../static/css/zabuto_calendar.css">
+    <link rel="stylesheet" type="text/css" th:href="@{lib/gritter/css/jquery.gritter.css}"
+          href="../static/lib/gritter/css/jquery.gritter.css"/>
     <!-- Custom styles for this template -->
     <link th:href="@{/css/style.css}" href="../static/css/style.css" rel="stylesheet">
     <link th:href="@{/css/style-responsive.css}" href="../static/css/style-responsive.css" rel="stylesheet">
     <script th:src="@{/lib/chart-master/Chart.js}" src="../static/lib/chart-master/Chart.js"></script>
-
-    <script th:src="@{https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js}" src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
-
     <!-- =======================================================
       Template Name: Dashio
       Template URL: https://templatemag.com/dashio-bootstrap-admin-template/
@@ -240,9 +241,15 @@
         </div>
         <div class="top-menu">
             <ul class="nav pull-right top-menu">
-                <li>
+                <li style="margin-top: 10px">
+                    <button class="btn btn-theme btn-block" href="#" data-toggle="modal" data-target="#change-password">
+                        修改密码
+                    </button>
+
+                </li>
+                <li style="margin-top: 10px">
                     <form th:action="@{/logout}" method="post">
-                        <button class="logout btn btn-theme btn-block" style="margin-top: 10px" type="submit">退出登录</button>
+                        <button class="btn btn-theme btn-block" type="submit">退出登录</button>
                     </form>
                 </li>
             </ul>
@@ -286,7 +293,7 @@
                     <ul class="sub">
                         <li><a href="product.html" th:href="@{/product}">商品管理</a></li>
                         <li><a href="type.html" th:href="@{/type}">类型管理</a></li>
-                        <li><a href="number.html" th:href="@{/number}">会员管理</a></li>
+                        <li><a href="member.html" th:href="@{/member}">会员管理</a></li>
                         <li><a href="order.html" th:href="@{/order}">订单管理</a></li>
                     </ul>
                 </li>
@@ -305,7 +312,7 @@
                         <i class="fa fa-bar-chart-o"></i>
                         <span>数据统计</span>
                     </a>
-                    <ul class="sub" >
+                    <ul class="sub">
                         <li><a href="finance.html" th:href="@{/finance}">财务统计</a></li>
                     </ul>
                 </li>
@@ -320,14 +327,15 @@
     <!--main content start-->
     <section id="main-content">
         <section class="wrapper">
-            <!-- 修改密码或者头像-->
-            <div class="modal fade" id="leading-in-head" tabindex="-1" role="dialog" aria-labelledby="leading-in-headModalLabel" aria-hidden="true">
+            <!-- 修改头像-->
+            <div class="modal fade" id="leading-in-head" tabindex="-1" role="dialog"
+                 aria-labelledby="leading-in-headModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="leading-in-headModalLabel">
-                                修改个人信息
+                                修改头像
                             </h4>
                         </div>
                         <div class="modal-body">
@@ -335,14 +343,50 @@
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">头像</label>
                                     <div class="col-sm-10">
-                                        <input id="leading-in-head-input" type="file" class="form-control" name="head" onchange="checkFile(this.value)">
+                                        <input id="leading-in-head-input" type="file" class="form-control" name="head"
+                                               onchange="checkFile(this.value)">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">
                                         取消
                                     </button>
-                                    <button type="button" id="leading-in-head-btn" class="btn  btn-danger" onclick="editHead()" disabled>
+                                    <button type="button" id="leading-in-head-btn" class="btn  btn-danger"
+                                            onclick="editHead()" disabled>
+                                        修改
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+            <!-- 修改密码-->
+            <div class="modal fade" id="change-password" tabindex="-1" role="dialog"
+                 aria-labelledby="change-passwordModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="change-passwordModalLabel">
+                                修改密码
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">密码</label>
+                                    <div class="col-sm-10">
+                                        <input id="change-password-input" type="password" class="form-control"
+                                               onchange="checkPassword(this.value)">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                        取消
+                                    </button>
+                                    <button type="button" id="change-password-btn" class="btn  btn-danger"
+                                            onclick="changePassword()" disabled>
                                         修改
                                     </button>
                                 </div>
@@ -360,25 +404,21 @@
                             <table class="table table-hover" id="goods">
                                 <thead>
                                 <tr>
+                                    <td hidden>编号</td>
                                     <td>名称</td>
                                     <td>数量</td>
-                                    <td>价格{{data.control.sale | saleMoneyFilter}}</td>
+                                    <td id="unit">价格(元)</td>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr ng-repeat="p in data.productList">
-                                    <td>{{p.name}}</td>
-                                    <td>{{p.count}}</td>
-                                    <td>{{p.outPrice}}</td>
-                                </tr>
+                                <tbody id="product-items">
                                 </tbody>
                             </table>
-                            <input type="number" ng-model="data.sum" id="money" class="form-control" readonly>
-                            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal12">付款
+                            <input type="member" value="0" id="money" class="form-control" readonly>
+                            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#pay">付款
                             </button>
                             <!-- 模态框（Modal） -->
-                            <div class="modal fade" id="myModal12" tabindex="-1" role="dialog"
-                                 aria-labelledby="myModalLabel"
+                            <div class="modal fade" id="pay" tabindex="-1" role="dialog"
+                                 aria-labelledby="payModalLabel"
                                  aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -386,19 +426,19 @@
                                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                                 &times;
                                             </button>
-                                            <h4 class="modal-title" id="myModalLabel">
-                                                请输入会员ID
+                                            <h4 class="modal-title" id="payModalLabel">
+                                                请输入会员ID(可选)
                                             </h4>
                                         </div>
                                         <div class="modal-body">
-                                            <input type="number" ng-model="data.numberId"
-                                                   class="number-id form-control">
+                                            <input type="member" th:max="11" id="member-id-input"
+                                                   class="member-id form-control">
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal">
                                                 关闭
                                             </button>
-                                            <button type="button" class="btn btn-primary" ng-click="pay()">
+                                            <button type="button" class="btn btn-primary" onclick="pay()">
                                                 确定
                                             </button>
                                         </div>
@@ -409,8 +449,7 @@
                         <div class="col-sm-3" id="right">
                             <div class="sale">
                                 <input class="change btn-warning btn-lg" type="button"
-                                       value="{{data.control.sale | saleFilter}}"
-                                       id="sale-title" style="width: 100%;" ng-click="change()">
+                                       id="change-state-btn" value="商品销售" style="width: 100%;" onclick="changeState()">
                                 <hr>
                                 <div class="fakeimg">
                                     <canvas id="myCanvas" hidden></canvas>
@@ -419,7 +458,7 @@
                                 <br>
                                 <input class="form-control" type="text" style="width: 150px;display: inline-block;"
                                        id="product-id">&nbsp;<i style="font-weight: 900;">*</i>&nbsp;
-                                <input class="form-control" type="number" value="1"
+                                <input class="form-control" type="member" value="1"
                                        style="width: 60px; display: inline-block;"
                                        id="product-count">&nbsp;<i style="font-weight: 900;">件</i>
                                 <br/><br/>
@@ -490,10 +529,8 @@
 <script th:src="@{/lib/sparkline-chart.js}" src="../static/lib/sparkline-chart.js"></script>
 <script th:src="@{/lib/zabuto_calendar.js}" src="../static/lib/zabuto_calendar.js"></script>
 
-<script th:src="@{/js/reqrcode.js}" src="../static/js/reqrcode.js"></script>
-<script th:src="@{/js/index.js}" src="../static/js/index.js"></script>
-<script th:src="@{/js/base.js}" src="../static/js/base.js"></script>
-<script th:src="@{https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.min.js}" src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+<script th:src="@{https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.min.js}"
+        src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
 <script type="text/javascript">
     var _csrf = "[[${_csrf.token}]]";
     var contextPath = "[[${#request.contextPath}]]";
@@ -501,15 +538,17 @@
      * 获取当前用户的用户信息
      * */
     $(document).ready(function () {
-        getMe(contextPath,_csrf)
+        getMe(contextPath, _csrf)
+
     })
+
     function addProduct() {
         var id = $("#product-id").val();
         var count = $("#product-count").val();
         var pattern = /^[0-9]+$/;
         if (pattern.test(id)) {
             if (count != null && count != undefined && count >= 1 && pattern.test(count)) {
-                angular.element(document.getElementById('dashio')).scope().getProduct(id, count)
+                getProductById(id,count);
             } else {
                 alert("商品数量不合法")
             }
@@ -527,9 +566,7 @@
             if (imgMsg == 'error decoding QR Code') {
                 screenShot();
             } else {
-                var p = angular.element(document.getElementById("dashio")).scope().getProduct(imgMsg, 1);
-                for (var t = Date.now(); Date.now() - t <= 1000;) ;
-                alert("扫码成功");
+                getProductById(imgMsg,1)
                 screenShot();
             }
         }
@@ -550,7 +587,7 @@
     /*
     * 将摄像头的拍摄内容实时播放在video
     * */
-   /* $(document).ready(function () {
+    $(document).ready(function () {
         navigator.mediaDevices.getUserMedia({
             video: true
         }).then(function (stream) {
@@ -563,9 +600,14 @@
             screenShot();
         });
 
-    });*/
+    });
 
 </script>
+<script th:src="@{/js/reqrcode.js}" src="../static/js/reqrcode.js"></script>
+<script th:src="@{/js/index.js}" src="../static/js/index.js"></script>
+<script th:src="@{/js/base.js}" src="../static/js/base.js"></script>
+<script th:src="@{https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js}"
+        src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
 </body>
 
 </html>

@@ -44,12 +44,16 @@ public class UserController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+    /**
+     * 修改用户信息
+     * */
     @RequestMapping("/edit")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result editUser(@RequestBody User user,HttpServletRequest request) {
-        //System.out.println(user);
+    public Result editUser(@RequestBody User user,Principal principal) {
+        System.out.println(user);
         try {
-            return userService.editUser(user,request);
+            return userService.editUser(principal,user);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
@@ -61,6 +65,17 @@ public class UserController {
         //System.out.println(user);
         try {
             return userService.listUser(user,request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
+
+    @RequestMapping("/edit/password")
+    @ResponseBody
+    public Result editPassword(@RequestParam("password") String password,Principal principal) {
+        try {
+            return userService.editPassword(principal, password);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
@@ -129,6 +144,9 @@ public class UserController {
         response.setHeader("refresh","0;URL=" + request.getContextPath() + "/index");
     }
 
+    /**
+     * 检查当前用户名是否已经注册
+     * */
     @RequestMapping("/check")
     //@CrossOrigin(allowCredentials = "true",origins = {"*"})
     public Result checkExist(@RequestBody User user) {

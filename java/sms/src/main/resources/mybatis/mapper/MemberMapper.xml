@@ -2,14 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mfs.sms.mapper.NumberMapper">
-    <sql id="numberColumn">
+<mapper namespace="com.mfs.sms.mapper.MemberMapper">
+    <sql id="memberColumn">
         id,name,phone,id_number,create_time,score,parent,deleted
     </sql>
-    <sql id="numberUserColumn">
+    <sql id="memberUserColumn">
         n.id,n.name,n.phone,n.id_number,n.create_time,n.score,n.parent,n.deleted,u.name as uname
     </sql>
-    <resultMap id="number" type="Number">
+    <resultMap id="member" type="Member">
         <id column="id" property="id"></id>
         <result column="name" property="name"></result>
         <result column="phone" property="phone"></result>
@@ -23,13 +23,13 @@
             <result property="name" column="uname"></result>
         </association>
     </resultMap>
-    <insert id="add" parameterType="Number">
-        insert into tb_number(
-        <include refid="numberColumn"></include>
+    <insert id="add" parameterType="Member">
+        insert into tb_member(
+        <include refid="memberColumn"></include>
         ) values(#{id},#{name},#{phone},#{idNumber},#{createTime},#{score},#{parentId},#{deleted})
     </insert>
-    <delete id="delete" parameterType="Number">
-        delete from tb_number
+    <delete id="delete" parameterType="Member">
+        delete from tb_member
         <where>
             <if test="id != null and id != ''">
                 and id = #{id}
@@ -39,8 +39,8 @@
             </if>
         </where>
     </delete>
-    <update id="update" parameterType="Number">
-        update tb_number
+    <update id="update" parameterType="Member">
+        update tb_member
         <set>
             <if test="name != null and name != ''">
                 name = #{name},
@@ -60,14 +60,14 @@
         </set>
         where id = #{id}
     </update>
-    <select id="queryById" parameterType="String" resultMap="number">
-        select <include refid="numberUserColumn"></include>
-        from tb_number n,tb_user u
+    <select id="queryById" parameterType="String" resultMap="member">
+        select <include refid="memberUserColumn"></include>
+        from tb_member n,tb_user u
         where n.id = #{id} and n.parent = u.id;
     </select>
-    <select id="query" parameterType="Number" resultMap="number">
-        select <include refid="numberUserColumn"></include>
-        from tb_number n,tb_user u
+    <select id="query" parameterType="Member" resultMap="member">
+        select <include refid="memberUserColumn"></include>
+        from tb_member n,tb_user u
         <where>
             <if test="id != null and id != ''">
                 and n.id = #{id}

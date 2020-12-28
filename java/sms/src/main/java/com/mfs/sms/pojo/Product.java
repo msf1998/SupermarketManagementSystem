@@ -25,7 +25,7 @@ public class Product {
     private Date inTime;           //入库时间
     private Double inPrice;
     private Double outPrice;
-    private String parentId;        //负责人，入库此商品的人
+    private Integer parentId;        //负责人，入库此商品的人
     private User parent;
     private Integer typeId;
     private Type type;
@@ -34,4 +34,6 @@ public class Product {
     //为实现业务逻辑所需的属性
     private Integer page;
     private String order;
+
+
 }

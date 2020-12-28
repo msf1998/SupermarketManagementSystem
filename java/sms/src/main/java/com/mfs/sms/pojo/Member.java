@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Number {
+public class Member {
     private String id;
     private String name;
     private String phone;

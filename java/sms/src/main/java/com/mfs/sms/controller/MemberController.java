@@ -1,8 +1,8 @@
 package com.mfs.sms.controller;
 
-import com.mfs.sms.pojo.Number;
+import com.mfs.sms.pojo.Member;
 import com.mfs.sms.pojo.Result;
-import com.mfs.sms.serviceImpl.NumberService;
+import com.mfs.sms.serviceImpl.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,16 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/number")
-public class NumberController {
+public class MemberController {
     @Autowired
-    private NumberService numberService;
+    private MemberService memberService;
 
     @RequestMapping("/add")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result addNumber(@RequestBody Number number, HttpServletRequest request) {
+    public Result addNumber(@RequestBody Member member, HttpServletRequest request) {
         //System.out.println(number);
         try {
-            return numberService.addNumber(number,request);
+            return memberService.addNumber(member,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
@@ -29,10 +29,10 @@ public class NumberController {
     }
     @RequestMapping("/delete")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result deleteNumber(@RequestBody Number number,HttpServletRequest request) {
+    public Result deleteNumber(@RequestBody Member member, HttpServletRequest request) {
         //System.out.println(number);
         try {
-            return numberService.deleteNumber(number,request);
+            return memberService.deleteNumber(member,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
@@ -40,10 +40,10 @@ public class NumberController {
     }
     @RequestMapping("/edit")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result editNumber(@RequestBody Number number,HttpServletRequest request) {
+    public Result editNumber(@RequestBody Member member, HttpServletRequest request) {
         //System.out.println(number);
         try {
-            return numberService.editNumber(number,request);
+            return memberService.editNumber(member,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
@@ -51,10 +51,10 @@ public class NumberController {
     }
     @RequestMapping("/list")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result listNumber(@RequestBody Number number, HttpServletRequest request) {
+    public Result listNumber(@RequestBody Member member, HttpServletRequest request) {
         //System.out.println(number);
         try {
-            return numberService.listNumber(number,request);
+            return memberService.listNumber(member,request);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);

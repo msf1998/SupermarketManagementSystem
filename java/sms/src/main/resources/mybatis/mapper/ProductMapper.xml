@@ -107,7 +107,7 @@
         select <include refid="productTypeUserColumn"></include>
         from tb_product p,tb_user u,tb_type t
         <where>
-            <if test="id != null and id != ''">
+            <if test="id != null">
                 and p.id = #{id}
             </if>
             <if test="name != null and name != ''">

@@ -1,5 +1,6 @@
 package com.mfs.sms.serviceImpl;
 
+import com.mfs.sms.exception.RedisUpdateException;
 import com.mfs.sms.mapper.RoleMapper;
 import com.mfs.sms.mapper.UserMapper;
 import com.mfs.sms.pojo.Result;
@@ -135,40 +136,43 @@ public class UserService {
         }
     }
 
+    /**
+     * 修改用户信息
+     * @param principal 当前登录的用户主体
+     * @param user 要修改的用户信息
+     * @return Result
+     * */
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
-    public Result editUser(User user, HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil.getUserId(request);
-        User user1 = userMapper.queryByUsername(userId);
+    public Result editUser(Principal principal, User user) throws RedisUpdateException {
+        //验证输入的合法性
+        Result result = delegatingCheckUser(user, "editUser");
+        if (result != null) {
+            return result;
+        }
+        //验证登录合法性
+        String username = principal.getName();
+        User user1 = quicklyGetUserByUsername(username);
         if (user1 == null) {
             return new Result(4,"用户不存在",null,null);
         }
-        if (user.getUsername().equals("1")) {
-            return new Result(2,"不能修改root用户",null,null);
-        }
+
+        //鉴权
         if (!user1.getRole().getUserUpdate()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
-        //授予的角色的权限等级不能高于操作这本身
-        Role role = roleMapper.queryById(user.getRoleId());
-        if (role.compareTo(user1.getRole()) == 1) {
-            return new Result(2,"授予权限过高",null,null);
-        }
-        if (user.getPassword() != null && !user.getPassword().equals("")) {
-            String salt = SaltGenerator.generatorSalt();
-            user.setPassword(CryptUtil.getMessageDigestByMD5(user.getPassword() + salt));
-        }
+
+        //修改数据库
         int res = userMapper.update(user);
         if (res == 1) {
-            User user2 = new User();
-            user2.setOrder("id");
-            user2.setPage(0);
-            user2.setDeleted(false);
-            List<User> list = userMapper.query(user2);
-            for (int i = 0;i < list.size(); i ++) {
-                list.get(i).setPassword(null);
+            //清除缓存
+            if (redisTemplate.hasKey("login.user." + user.getUsername())) {
+                Boolean delete = redisTemplate.delete("login.user." + user.getUsername());
+                if (!delete) {
+                    throw new RedisUpdateException("删除用户缓存失败，user : " + user.getUsername());
+                }
             }
-            return new Result(1,"修改成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            return new Result(1,"修改成功",null,null);
+
         } else {
             return new Result(2,"修改失败",null,null);
         }
@@ -196,15 +200,41 @@ public class UserService {
         //System.out.println(list);
         return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
-    
+
+    /**
+     * 修改当前登录的用户密码
+     * @param principal 已登录用户主体
+     * @param password 修改的用户密码
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.SERIALIZABLE,timeout = 20)
+    public Result editPassword(Principal principal,String password) {
+        String username = principal.getName();
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password));
+
+        //验证输入合法性
+        Result result = delegatingCheckUser(user, "editPassword");
+        if (result != null) {
+            return result;
+        }
+
+        //修改数据库
+        int update = userMapper.update(user);
+        if (update == 1) {
+            return new Result(1,"修改成功，下次登陆生效",null,null);
+        }
+        return new Result(2,"修改失败",null,null);
+    }
     /**
      * 修改当前登录用户的头像
      * @param principal 登录主体
      * @param head 上传的图片
      * @return Result
      * */
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
-    public Result editHead(Principal principal,MultipartFile head) throws Exception{
+    @Transactional(isolation = Isolation.SERIALIZABLE,timeout = 20)
+    public Result editHead(Principal principal,MultipartFile head) throws RedisUpdateException, IOException {
         //验证用户合法性
         String username = principal.getName();
         User user = quicklyGetUserByUsername(username);
@@ -252,7 +282,7 @@ public class UserService {
             } else {
                 boolean delete = file.delete();
                 if (!delete) {
-                    logUtil.log("删除" + name + "失败",this.getClass());
+                    throw new RedisUpdateException("删除用户缓存失败，user : " + user.getUsername());
                 }
                 return new Result(2,"修改失败",null,null);
             }
@@ -280,7 +310,7 @@ public class UserService {
      * @param username 用户名
      * @return 如果找到则返回User对象，找不到则返回null
      * */
-    private User quicklyGetUserByUsername(String username) {
+    User quicklyGetUserByUsername(String username) {
         //从缓存中获取用户信息
         ValueOperations<String, Object> opsForValue = redisTemplate.opsForValue();
         Object map = opsForValue.get("login.user." + username);
@@ -444,12 +474,54 @@ public class UserService {
                 }
                 break;
             }
+            //创建登陆缓存
             case "cacheLogin" : {
                 result = user.checkUsername();
                 if (result != null){
                     result.setStatus(2);
                     return result;
                 }
+                break;
+            }
+            //修改密码
+            case "editPassword" : {
+                result = user.checkUsername();
+                if (result != null) {
+                    result.setStatus(2);
+                    return result;
+                }
+                result = user.checkPassword();
+                if (result != null) {
+                    result.setStatus(2);
+                    return result;
+                }
+                break;
+            }
+            //修改用户信息（角色，名字）
+            case "editUser" : {
+                result = user.checkUsername();
+                if (result != null) {
+                    result.setStatus(2);
+                    return result;
+                }
+                if (user.getName() != null) {
+                    result = user.checkName();
+                    if (result != null) {
+                        result.setStatus(2);
+                        return result;
+                    }
+                }
+                if (user.getRoleId() != null) {
+                    Role role = roleMapper.queryById(user.getRoleId());
+                    if (role == null) {
+                        return new Result(2,"该角色不存在",null,null);
+                    }
+                }
+                user.setId(null);
+                user.setPassword(null);
+                user.setHead(null);
+                user.setCreateTime(null);
+                user.setDeleted(null);
                 break;
             }
         }

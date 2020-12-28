@@ -17,7 +17,7 @@ public class Order {
     private Double sum;
     private Date createTime;
     private String creatorId;
-    private Number creator;
+    private Member creator;
     private String parentId;
     private User parent;
 

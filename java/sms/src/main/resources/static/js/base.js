@@ -17,13 +17,14 @@ function getMe(contextPath,_csrf) {
     })
 }
 
-function defaultAjaxRequest(data,url) {
+function formDataAjaxRequest(data,url) {
     $.ajax({
         url: url,
         type: "post",
         async: true,
         contentType: false,
         processData:false,
+        dataType: "json",
         data: data,
         success: function (response) {
             if (response.status == 1) {
@@ -31,6 +32,41 @@ function defaultAjaxRequest(data,url) {
             } else {
                 alert(response.describe)
             }
+        }
+    })
+}
+
+function defaultAjaxRequest(data,url) {
+    $.ajax({
+        url: url,
+        type: "post",
+        data: data,
+        success: function (response) {
+            alert(response.describe)
+        }
+    })
+}
+
+function syncAjaxRequest(data,url) {
+    return $.ajax({
+        url: url,
+        type: "post",
+        data: data,
+        async: false,
+        success: function (response) {
+            return response;
+        }
+    })
+}
+
+function jsonAjaxRequest(data,url) {
+    $.ajax({
+        url: url,
+        type: "post",
+        contentType: "json",
+        data: JSON.stringify(data),
+        success: function (response) {
+            alert(response.describe)
         }
     })
 }

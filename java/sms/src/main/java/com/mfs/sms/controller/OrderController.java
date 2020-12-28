@@ -5,13 +5,16 @@ import com.mfs.sms.pojo.Result;
 import com.mfs.sms.pojo.to.SaleTo;
 import com.mfs.sms.serviceImpl.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
-@RestController
+@Controller
 @RequestMapping("/api/order")
 public class OrderController {
     @Autowired
@@ -28,14 +31,14 @@ public class OrderController {
         }
     }
     /**
-     * @Author dyz
+     * 创建订单完成支付
      * */
     @RequestMapping("/pay")
-    //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result createOrder(@RequestBody SaleTo saleTo, HttpServletRequest request) {
+    @ResponseBody
+    public Result createOrder(Principal principal,SaleTo saleTo) {
         //System.out.println(saleTo);
         try {
-            return orderService.createOrder(saleTo,request);
+            return orderService.createOrder(principal,saleTo);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);

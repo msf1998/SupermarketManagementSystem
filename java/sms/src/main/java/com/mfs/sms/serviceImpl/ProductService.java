@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -35,29 +36,35 @@ public class ProductService {
     private ProductMapper productMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    UserService userService;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
 
     /**
-    *@Author dyz
+     * 根据id获取商品
+     * @param principal 登录主体
+     * @param product 查询参数
+     * @return Result
     * */
-    public Result getProduct(Product product, HttpServletRequest request) {
-        //从token获取userId
-        String userId = RequestUtil.getUserId(request);
-        //通过ID获取用户
-        User user = userMapper.queryByUsername(userId);
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result getProduct(Principal principal, Product product){
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
 
         Product product1 = productMapper.queryById(product.getId());
-
-        if (!(product1 != null && product1.getCount() >= product.getCount())) {
-            return new Result(2,"库存不足",null,null);
+        if(product1 == null) {
+            return new Result(2,"没有该商品",null,null);
+        }
+        if (product1.getCount() < product.getCount()) {
+            return new Result(2,"库存不足,仅剩" + product1.getCount() + "件",null,null);
         }
 
         product1.setCount(product.getCount());
 
-        return new Result(1,"查询成功",product1,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        return new Result(1,"查询成功",product1,null);
     }
 
     //修改商品图片
@@ -145,7 +152,7 @@ public class ProductService {
             Product product = new Product(id,m.get("商品名"),"default.jpg",m.get("供货商"),
                     sdf.parse(m.get("生产日期")),Integer.parseInt(m.get("保质期(月)")),Integer.parseInt(m.get("提醒(天)")),
                     Integer.parseInt(m.get("数量")),Integer.parseInt(m.get("预警库存")),new Date(),Double.parseDouble(m.get("进价")),
-            Double.parseDouble(m.get("售价")),userId,null,Integer.parseInt(m.get("类型编号")),null,QCodeUtil.createQRCode(id),null,null);
+            Double.parseDouble(m.get("售价")),Integer.valueOf(userId),null,Integer.parseInt(m.get("类型编号")),null,QCodeUtil.createQRCode(id),null,null);
             int res = productMapper.add(product);
             if (res != 1) {
                 int i = 1 / 0;
@@ -309,7 +316,7 @@ public class ProductService {
 
         product.setId(product.getId() + new Date().getTime());
         product.setPhoto("default.jpg");
-        product.setParentId(user.getUsername());
+        product.setParentId(user.getId());
         product.setInTime(new Date());
         //创建商品码
         String qrCode = QCodeUtil.createQRCode(product.getId());

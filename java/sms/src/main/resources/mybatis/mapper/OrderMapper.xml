@@ -6,7 +6,7 @@
     <sql id="orderColumn">
         id,`describe`,sum,create_time,creator,parent
     </sql>
-    <sql id="orderUserNumberColumn">
+    <sql id="orderUserMemberColumn">
         o.id,o.describe,o.sum,o.create_time,o.creator,o.parent,n.name as nname,u.name as uname
     </sql>
     <resultMap id="order" type="Order">
@@ -20,7 +20,7 @@
             <id column="parent" property="id"></id>
             <result property="name" column="uname"></result>
         </association>
-        <association property="creator" javaType="Number" >
+        <association property="creator" javaType="Member" >
             <id column="creator" property="id"></id>
             <result property="name" column="nname"></result>
         </association>
@@ -56,13 +56,13 @@
         where id = #{id}
     </update>
     <select id="queryById" parameterType="Integer" resultMap="order">
-        select <include refid="orderUserNumberColumn"></include>
-        from tb_order o,tb_number n,tb_user u
+        select <include refid="orderUserMemberColumn"></include>
+        from tb_order o,tb_member n,tb_user u
         where o.id = #{id} and o.parent = u.id; and o.creator = n.id
     </select>
     <select id="query" parameterType="Order" resultMap="order">
-        select <include refid="orderUserNumberColumn"></include>
-        from tb_number n,tb_user u,tb_order o
+        select <include refid="orderUserMemberColumn"></include>
+        from tb_member n,tb_user u,tb_order o
         <where>
             <if test="id != null">
                 and o.id = #{id}
