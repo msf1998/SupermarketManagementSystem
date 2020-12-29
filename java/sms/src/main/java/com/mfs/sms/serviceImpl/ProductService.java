@@ -180,7 +180,7 @@ public class ProductService {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
 
-        List<Product> list = productMapper.queryGreaterThan(new CompareObj("warn_count","count"));
+        List<Product> list = productMapper.queryGreaterThan();
 
         String path = "E:/images/sms/product/excel/leading-out/" + userId + new Date().getTime() + ".xls";
 
@@ -233,7 +233,7 @@ public class ProductService {
 
         int res = productMapper.delete(product);
         if (res == 1) {
-            List<Product> list = productMapper.queryGreaterThan(new CompareObj("warn_count","count"));
+            List<Product> list = productMapper.queryGreaterThan();
             return new Result(1,"删除成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
         } else {
             return new Result(2,"删除失败",null,null);
@@ -265,36 +265,47 @@ public class ProductService {
             return new Result(2,"修改失败",null,null);
         }
     }
-    //获取将要过期的商品列表
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result listWillGoBadProduct(HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+    /**
+     * 获取即将过期的产品
+     * @param principal 已登陆的用户主体
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result listWillGoBadProduct(Principal principal) {
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getProductSelect()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
         List<Product> list = productMapper.queryBySelfLife();
-        return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        return new Result(1,"查询成功",list,null);
     }
-    //获取库存量小于提醒值的商品列表
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result listCountLessThanWarnCountProduct(CompareObj compareObj,HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+
+    /**
+     * 获取库存过少的商品列表
+     * @param principal 已登录的用户主体
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result listCountLessThanWarnCountProduct(Principal principal) {
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getProductSelect()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
-        List<Product> list = productMapper.queryGreaterThan(compareObj);
+
+        List<Product> list = productMapper.queryGreaterThan();
         //System.out.println(list);
-        return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        return new Result(1,"查询成功",list,null);
     }
 
 

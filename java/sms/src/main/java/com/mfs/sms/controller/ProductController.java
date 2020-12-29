@@ -1,6 +1,5 @@
 package com.mfs.sms.controller;
 
-import com.mfs.sms.pojo.CompareObj;
 import com.mfs.sms.pojo.Product;
 import com.mfs.sms.pojo.Result;
 import com.mfs.sms.serviceImpl.ProductService;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
@@ -91,20 +89,28 @@ public class ProductController {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);        }
     }
-    //获取将要过期的的商品的列表
-    @RequestMapping("/list/will/go-bad")
-    public Result listWillGoBadProduct(HttpServletRequest request) {
+
+    /**
+     * 获取将要变质的商品
+     * */
+    @RequestMapping("/list/bad")
+    @ResponseBody
+    public Result listWillGoBadProduct(Principal principal) {
         try {
-            return productService.listWillGoBadProduct(request);
+            return productService.listWillGoBadProduct(principal);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);        }
     }
-    //获取库存过少的商品的列表
-    @RequestMapping("/list/less-than/warn-count")
-    public Result listCountLessThanWarnCountProduct(HttpServletRequest request) {
+
+    /**
+     * 获取库存过少的商品的列表
+     * */
+    @RequestMapping("/list/less")
+    @ResponseBody
+    public Result listCountLessThanWarnCountProduct(Principal principal) {
         try {
-            return productService.listCountLessThanWarnCountProduct(new CompareObj("warn_count","count"),request);
+            return productService.listCountLessThanWarnCountProduct(principal);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);        }

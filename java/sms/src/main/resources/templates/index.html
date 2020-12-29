@@ -245,7 +245,6 @@
                     <button class="btn btn-theme btn-block" href="#" data-toggle="modal" data-target="#change-password">
                         修改密码
                     </button>
-
                 </li>
                 <li style="margin-top: 10px">
                     <form th:action="@{/logout}" method="post">
@@ -280,7 +279,7 @@
                     </a>
                 </li>
                 <li class="mt">
-                    <a href="monitor.html" th:href="@{/monitor}">
+                    <a href="monitor.html" th:href="@{/monitor}" onclick="return goToMonitor();">
                         <i class="fa fa-desktop"></i>
                         <span>智能监控</span>
                     </a>
@@ -538,8 +537,7 @@
      * 获取当前用户的用户信息
      * */
     $(document).ready(function () {
-        getMe(contextPath, _csrf)
-
+        getMe(contextPath,_csrf)
     })
 
     function addProduct() {

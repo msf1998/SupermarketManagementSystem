@@ -36,7 +36,7 @@ public class OrderController {
     @RequestMapping("/pay")
     @ResponseBody
     public Result createOrder(Principal principal,SaleTo saleTo) {
-        //System.out.println(saleTo);
+        System.out.println(saleTo);
         try {
             return orderService.createOrder(principal,saleTo);
         } catch (Exception e) {
@@ -47,7 +47,7 @@ public class OrderController {
     @RequestMapping("/add")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
     public Result addOrder(@RequestBody Order order, HttpServletRequest request) {
-        System.out.println(order);
+        //System.out.println(order);
         try {
             return orderService.addOrder(order,request);
         } catch (Exception e) {

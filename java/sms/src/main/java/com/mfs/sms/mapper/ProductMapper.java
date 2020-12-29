@@ -13,6 +13,6 @@ public interface ProductMapper {
     int update(Product product);
     List<Product> query(Product product);
     Product queryById(String id);
-    List<Product> queryGreaterThan(CompareObj compareObj);
+    List<Product> queryGreaterThan();
     List<Product> queryBySelfLife();
 }

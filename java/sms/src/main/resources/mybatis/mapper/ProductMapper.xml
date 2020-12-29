@@ -137,13 +137,11 @@
             limit #{page} ,10
         </if>
     </select>
-    <select id="queryGreaterThan" parameterType="CompareObj" resultMap="product">
+    <select id="queryGreaterThan" resultMap="product">
         select <include refid="productTypeUserColumn"></include>
         from tb_product p,tb_type t,tb_user u
         <where>
-            <if test="column1 != null and column1 != '' and column2 != null and column2 != ''">
-                and p.${column1} > p.${column2}
-            </if>
+            p.count le p.warn_count
             and type not in (3)
             and p.type = t.id
             and p.parent = u.id

@@ -2,41 +2,6 @@ let sale = true;
 let productIds = []
 let counts = []
 
-function checkFile(file) {
-    var pattern = /^.*\.png$|^.*\.jpg$/
-    if (pattern.test(file) != true) {
-        $("#leading-in-head-btn").attr("disabled",true)
-        alert("仅支持.jpg和.png格式的图片");
-    } else {
-        $("#leading-in-head-btn").attr("disabled",false)
-    }
-}
-
-function checkPassword(password) {
-    if (password == "" || password == null || password == undefined) {
-        $("#change-password-btn").attr("disabled",true)
-    } else {
-        $("#change-password-btn").attr("disabled",false)
-    }
-}
-
-function editHead() {
-    var head = $("#leading-in-head-input")[0].files[0];
-    var formData = new FormData();
-    formData.append("head",head);
-    formData.append("_csrf",_csrf);
-    formDataAjaxRequest(formData,contextPath + "/api/user/edit/head")
-}
-
-function changePassword() {
-    var password = md5($("#change-password-input").val());
-    defaultAjaxRequest({
-        "_csrf": _csrf,
-        "password": password
-    },contextPath + "/api/user/edit/password")
-
-}
-
 function changeState() {
     sale = !sale;
     $("#unit").text(sale ? "价格（元）" : "价格（积分）")
@@ -84,28 +49,23 @@ function getProductById(id,count) {
 
 function pay() {
     let memberId = $("#member-id-input").val();
-    let data = {}
+    let formData = new FormData();
+    formData.append("_csrf",_csrf)
+    formData.append("sale",sale)
+    for (let i = 0; i < productIds.length; i ++) {
+        formData.append("productId[" + i + "]",productIds[i])
+    }
+    for (let i = 0; i < counts.length; i ++) {
+        formData.append("count[" + i + "]",counts[i])
+    }
     if (memberId == null || memberId == undefined || memberId == "") {
-        data = {
-            "_csrf": _csrf,
-            "productId": productIds[0],
-            "count": counts[0],
-            "sale": sale
-        }
+
     } else if(memberId.length == 11) {
-        data = {
-            "_csrf": _csrf,
-            "productId": productIds[0],
-            "count": counts[0],
-            "sale": sale,
-            "memberId": memberId
-        }
+        formData.append("memberId",memberId)
     } else {
         alert("会员Id不合法");
     }
-    console.log(data)
-    console.log(data)
-    defaultAjaxRequest(data,contextPath + "/api/order/pay")
+    defaultFormDataAjaxRequest(formData,contextPath + "/api/order/pay")
     productIds = []
     counts = []
     $("#product-items").empty()
