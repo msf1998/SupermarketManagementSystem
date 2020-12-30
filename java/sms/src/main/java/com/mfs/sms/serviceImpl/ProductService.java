@@ -1,5 +1,6 @@
 package com.mfs.sms.serviceImpl;
 
+import com.mfs.sms.exception.DatabaseUpdateException;
 import com.mfs.sms.mapper.ProductMapper;
 import com.mfs.sms.mapper.UserMapper;
 import com.mfs.sms.pojo.CompareObj;
@@ -11,16 +12,17 @@ import com.mfs.sms.utils.ExcelUtil;
 import com.mfs.sms.utils.QCodeUtil;
 import com.mfs.sms.utils.RequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.Filter;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +34,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class ProductService {
+    @Value("${web.upload-path}")
+    private String rootPath;
     @Autowired
     private ProductMapper productMapper;
     @Autowired
@@ -164,81 +168,81 @@ public class ProductService {
         List<Product> l = productMapper.query(product1);
         return new Result(1,"导入成功",l,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
     }
+
     /**
-     * @Author lzc
+     * 导出进货单
+     * @param principal 已登录的用户主体
+     * @param response HttpServletResponse
      * */
-    //创建进货单
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result createPurchaseOrder(HttpServletRequest request) {
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+    @Transactional(isolation = Isolation.SERIALIZABLE,timeout = 20)
+    public void createPurchaseOrder(Principal principal, HttpServletRequest request, HttpServletResponse response) throws DatabaseUpdateException {
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
-            return new Result(4,"用户不存在",null,null);
+            response.setStatus(302);
+            response.setHeader("location",request.getContextPath() + "/error?status=4");
         }
-
         if (!user.getRole().getProductUpdate()) {
-            return new Result(5,"抱歉,您没有该权限",null,null);
+            response.setStatus(302);
+            response.setHeader("location",request.getContextPath() + "/error?status=5");
         }
 
+        //创建excel
         List<Product> list = productMapper.queryGreaterThan();
-
-        String path = "E:/images/sms/product/excel/leading-out/" + userId + new Date().getTime() + ".xls";
-
+        String path = rootPath + "/product/excel/leading-out/" + username + new Date().getTime() + ".xls";
         String file = ExcelUtil.write(path, list);
+        File f = new File(rootPath + "/product/excel/leading-out/" + file);
+        if (!f.exists()) {
+            response.setStatus(302);
+            response.setHeader("location",request.getContextPath() + "/error?status=2");
+        }
 
+        //将处理过的产品类型改为积压类型
         int res = 1;
         for (Product p : list) {
             p.setTypeId(3);
             res = res * productMapper.update(p);
         }
 
-        if (file.contains(userId) && res == 1){
-            return new Result(1,"创建成功",file,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
-        } else {
-            int i = 1/0;
-            return new Result(2,"创建excel失败",null,null);
-        }
-    }
-    /**
-     * @Author lzc
-     * */
-    //删除库存过少的商品
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result deleteCountLessThanWarnCountProduct(Product product,HttpServletRequest request) {
-        //验证用户合法性
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
-        if (user == null) {
-            return new Result(4,"用户不存在",null,null);
-        }
+        //将文件写入到response
+        if (res == 1){
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition","attachment;fileName=" + file);
+            InputStream is = null;
+            ServletOutputStream os = null;
+            try {
+                is = new FileInputStream(f);
+                os = response.getOutputStream();
+                byte[] b = new byte[1024];
+                int n = 0;
+                while ((n = is.read(b)) > 0) {
+                    os.write(b);
+                }
+             } catch (IOException e) {
+                response.setStatus(302);
+                response.setHeader("location",request.getContextPath() + "/error?status=3");
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                    if (os != null) {
+                        os.close();
+                    }
+                    f.delete();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        if (!user.getRole().getProductDelete()) {
-            return new Result(5,"抱歉,您没有该权限",null,null);
-        }
-
-        //删除二维码
-        Product product1 = productMapper.queryById(product.getId());
-        File file = new File("E:/images/sms/product/qcode/" + product1.getQCode());
-        if (file.exists()) {
-            file.delete();
-        }
-
-        if (!product1.getPhoto().equals("default.jpg")) {
-            //删除图片
-            file = new File("E:/images/sms/product/" + product1.getPhoto());
-            if (file.exists()) {
-                file.delete();
             }
-        }
-
-        int res = productMapper.delete(product);
-        if (res == 1) {
-            List<Product> list = productMapper.queryGreaterThan();
-            return new Result(1,"删除成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
         } else {
-            return new Result(2,"删除失败",null,null);
+            f.delete();
+            throw new DatabaseUpdateException("修改产品类型");
         }
     }
+
     /**
      * @Author lzc
      * */
@@ -344,61 +348,85 @@ public class ProductService {
             return new Result(2,"添加失败",null,null);
         }
     }
+
+    /**
+     * 删除指定商品（可以通过商品id和名称删除）
+     * @param principal 已登录的用户主体
+     * @param product 要修改的商品
+     * @return Result
+     **/
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result deleteProduct(Product product,HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil .getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+    public Result deleteProduct(Principal principal, Product product) throws DatabaseUpdateException {
+        //检查参数
+        Result result = delegatingParameterObjectCheck(product, "deleteProduct");
+        if (result != null) {
+            return result;
+        }
+
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getProductDelete()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
-        //删除二维码
-        Product product1 = productMapper.queryById(product.getId());
-        File file = new File("E:/images/sms/product/qcode/" + product1.getQCode());
-        if (file.exists()) {
-            file.delete();
-        }
-        if (!product1.getPhoto().equals("default.jpg")) {
-            //删除图片
-            file = new File("E:/images/sms/product/" + product1.getPhoto());
-            if (file.exists()) {
-                file.delete();
-            }
-        }
+        List<Product> list = productMapper.query(product);
+        //删除数据库数据
         int res = productMapper.delete(product);
-        if (res == 1) {
-            product1 = new Product();
-            product1.setOrder("name");
-            product1.setPage(0);
-            List<Product> list = productMapper.query(product1);
-            return new Result(1,"删除成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        if (res >= 1) {
+            for (Product p : list) {
+                //删除二维码
+                File file = new File(rootPath + "/product/qcode/" + p.getQCode());
+                if (file.exists()) {
+                    file.delete();
+                }
+                if (!p.getPhoto().equals("default.jpg")) {
+                    //删除图片
+                    file = new File(rootPath + "/product/" + p.getPhoto());
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+            }
+            return new Result(1,"删除成功",null,null);
         } else {
-            return new Result(2,"删除失败",null,null);
+            throw new DatabaseUpdateException("删除商品失败");
         }
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result editProduct(Product product, HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+
+    /**
+     * 修改产品信息（至少包含商品id）
+     * @param principal 已登录的用户主体
+     * @param product 要修改的产品信息
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.SERIALIZABLE,timeout = 20)
+    public Result editProduct(Principal principal, Product product) throws DatabaseUpdateException {
+        System.out.println(product);
+        //参数检查
+        Result result = delegatingParameterObjectCheck(product, "editProduct");
+        if (result != null) {
+            return result;
+        }
+
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getProductUpdate()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
+        //更新数据库
         int res = productMapper.update(product);
         if (res == 1) {
-            Product product1 = new Product();
-            product1.setOrder("name");
-            product1.setPage(0);
-            List<Product> list = productMapper.query(product1);
-            return new Result(1,"修改成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            return new Result(1,"修改成功",null,null);
         } else {
-            return new Result(2,"修改失败",null,null);
+           throw new DatabaseUpdateException("修改产品信息失败");
         }
     }
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
@@ -416,5 +444,47 @@ public class ProductService {
         }
         List<Product> list = productMapper.query(product);
         return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+    }
+
+    /**
+     * 根据场景进行参数检查
+     * @param object 被检查的对象
+     * @param context 业务场景
+     * @return Result 或 null
+     **/
+    private Result delegatingParameterObjectCheck(Object object,String context) {
+        switch (context) {
+            case "editProduct" : {
+                Product product = (Product)object;
+                if (product.getId() == null) {
+                    return new Result(2,"产品id不正确",null,null);
+                }
+                break;
+            }
+            case "deleteProduct" : {
+                Product product = (Product) object;
+                product.setPage(null);
+                product.setOrder(null);
+                product.setCount(null);
+                product.setTypeId(null);
+                product.setType(null);
+                product.setPhoto(null);
+                product.setInTime(null);
+                product.setParentId(null);
+                product.setParent(null);
+                product.setQCode(null);
+                product.setWarnBefore(null);
+                product.setWarnCount(null);
+                product.setManufacturer(null);
+                product.setSelfLife(null);
+                product.setOutPrice(null);
+                product.setProductDate(null);
+                if (product.getId() == null && product.getName() == null) {
+                    return new Result(2,"必须指定商品id或者商品名称",null,null);
+                }
+                break;
+            }
+        }
+        return null;
     }
 }

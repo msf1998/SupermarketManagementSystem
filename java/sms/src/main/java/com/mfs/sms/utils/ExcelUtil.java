@@ -11,11 +11,17 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ExcelUtil {
-    private static List<String> title = Arrays.asList("商品名", "类型编号","供货商","保质期(月)","提醒(天)","进价","售价","编号","生产日期","数量","预警库存");
+    private static List<String> title = Arrays.asList("商品名", "类型编号","供货商","保质期(月;无保质期,请填-1)","提醒(天)","进价","售价","编号","生产日期","数量","预警库存");
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
     private ExcelUtil(){}
 
+    /**
+     * 将list列表中的产品数据写入到excel文件中
+     * @param path excel的路径
+     * @param list 产品列表
+     * @return 文件名称
+     * */
     public static String write(String path, List<Product> list) {
         File file  = new File(path);
         try {

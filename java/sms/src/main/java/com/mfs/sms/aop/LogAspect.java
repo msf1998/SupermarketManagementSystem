@@ -47,7 +47,7 @@ public class LogAspect {
         if (!(joinPoint.getSignature().getName().contains("checkExist") || joinPoint.getSignature().getName().contains("register") || joinPoint.getSignature().getName().contains("delegatingCheckUser"))) {
             Log log = new Log();
             log.setAction("{method:'"+ joinPoint.getSignature().getName() +"',args:'" + Arrays.toString(joinPoint.getArgs()) + "'}");
-            log.setResult(object.toString());
+            log.setResult(object == null ? null : object.toString());
             String creator = null;
             if (joinPoint.getSignature().getName().contains("login")) {
                 Object[] args = joinPoint.getArgs();

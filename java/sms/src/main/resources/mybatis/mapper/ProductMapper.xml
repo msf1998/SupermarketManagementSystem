@@ -141,7 +141,7 @@
         select <include refid="productTypeUserColumn"></include>
         from tb_product p,tb_type t,tb_user u
         <where>
-            p.count le p.warn_count
+            (p.count &lt; p.warn_count or p.count = p.warn_count)
             and type not in (3)
             and p.type = t.id
             and p.parent = u.id
@@ -152,7 +152,8 @@
         select <include refid="productTypeUserColumn"></include>
         from tb_product p,tb_type t,tb_user u
         <where>
-            now() > date_sub(date_add(p.product_date,interval p.self_life month),interval p.warn_before day)
+            p.self_life != -1
+            and now() > date_sub(date_add(p.product_date,interval p.self_life month),interval p.warn_before day)
             and p.type = t.id
             and p.parent = u.id
             and p.count != 0

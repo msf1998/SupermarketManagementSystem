@@ -46,7 +46,7 @@
     ======================================================= -->
 </head>
 
-<body ng-app="dashio" ng-controller="monitorController">
+<body>
 <section id="container">
     <!-- **********************************************************************************************************************************************************
         TOP BAR CONTENT & NOTIFICATIONS
@@ -404,9 +404,7 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-
-            <h3><i class="fa fa-angle-right"></i>库存监控</h3>
-            <button type="button" class="btn btn-warning" ng-click="createExcel()">导出进货单</button>
+            <!-- 促销 -->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
@@ -419,39 +417,34 @@
                         </div>
                         <div class="modal-body">
                             <!-- <input type="member" ng-model="data.product.id | intFilter" placeholder="ID" class="form-control" ng-hide="data.control.modalTitle | productIdHideFilter"> -->
-                            <input type="member" ng-model="data.product.id" placeholder="ID" class="form-control"
-                                   ng-hide="data.control.modalTitle | productIdHideFilter">
+                            <input type="text" id="name-input" placeholder="商品名称" class="form-control">
                             <br>
-                            <input type="text" ng-model="data.product.name" placeholder="商品名称" class="form-control">
-                            <br>
-                            <input type="text" ng-model="data.product.manufacturer" placeholder="供货商"
+                            <input type="member" id="selfLife-input" placeholder="保质期/(月)"
                                    class="form-control">
                             <br>
-                            <input type="member" ng-model="data.product.selfLife" placeholder="保质期/(月)"
+                            <input type="member" id="warnBefore-input" placeholder="提醒/(天)"
                                    class="form-control">
                             <br>
-                            <input type="member" ng-model="data.product.warnBefore" placeholder="提醒/(天)"
+                            <input type="member" id="inPrice-input" placeholder="进价/(元)"
                                    class="form-control">
                             <br>
-                            <input type="member" ng-model="data.product.count" placeholder="库存" class="form-control">
-                            <br>
-                            <input type="member" ng-model="data.product.warnCount" placeholder="最小库存"
-                                   class="form-control">
-                            <br>
-                            <input type="member" ng-model="data.product.inPrice" placeholder="进价/(元)"
-                                   class="form-control">
-                            <br>
-                            <input type="member" ng-model="data.product.outPrice" placeholder="售价/(元)"
+                            <input type="member" id="outPrice-input" placeholder="售价/(元)"
                                    class="form-control">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                            <button type="button" class="btn btn-primary" ng-click="submitProduct()">提交</button>
+                            <button type="button" class="btn btn-primary" onclick="submitEdit()">提交</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
+
+            <h3><i class="fa fa-angle-right"></i>库存监控</h3>
+            <form th:action="@{/api/product/purchase-order/download}" method="post">
+                <button type="submit" class="btn btn-warning">导出进货单</button>
+            </form>
             <!-- page start-->
+            <!-- 库存预警列表 -->
             <div class="content-panel">
                 <div class="adv-table">
                     <div class="content-panel">
@@ -476,27 +469,8 @@
                                 <th><i></i>操作</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr ng-repeat="p in data.product1List">
-                                <td>{{p.id}}</td>
-                                <td><img ng-src="{{p.photo | photoFilter}}" style="width: 30px;height: 30px;"></td>
-                                <td>{{p.name}}</td>
-                                <td>{{p.type.name}}</td>
-                                <td>{{p.manufacturer}}</td>
-                                <td>{{p.productDate | dateFilter}}</td>
-                                <td>{{p.selfLife}}</td>
-                                <td>{{p.warnBefore}}</td>
-                                <td>{{p.count}}</td>
-                                <td>{{p.warnCount}}</td>
-                                <td>{{p.inTime | dateFilter}}</td>
-                                <td>{{p.inPrice}}</td>
-                                <td>{{p.outPrice}}</td>
-                                <td>{{p.parent.name}}</td>
-                                <td>
-                                    <button class="btn btn-danger btn-xs" ng-click="deleteProduct1(p)"><i
-                                            class="fa fa-trash-o "></i></button>
-                                </td>
-                            </tr>
+                            <tbody id="less-table">
+
                             </tbody>
                         </table>
                     </div>
@@ -505,6 +479,7 @@
             <hr>
             <h3><i class="fa fa-angle-right"></i>质量监控</h3>
             <!-- page start-->
+            <!-- 过期警告列表 -->
             <div class="content-panel">
                 <div class="adv-table">
                     <div class="content-panel">
@@ -529,31 +504,8 @@
                                 <th><i></i>操作</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr ng-repeat="p in data.product2List">
-                                <td>{{p.id}}</td>
-                                <td><img ng-src="{{p.photo | photoFilter}}" style="width: 30px;height: 30px;"></td>
-                                <td>{{p.name}}</td>
-                                <td>{{p.type.name}}</td>
-                                <td>{{p.manufacturer}}</td>
-                                <td>{{p.productDate | dateFilter}}</td>
-                                <td>{{p.selfLife}}</td>
-                                <td>{{p.warnBefore}}</td>
-                                <td>{{p.count}}</td>
-                                <td>{{p.warnCount}}</td>
-                                <td>{{p.inTime | dateFilter}}</td>
-                                <td>{{p.inPrice}}</td>
-                                <td>{{p.outPrice}}</td>
-                                <td>{{p.parent.name}}</td>
-                                <td>
-                                    <button class="btn btn-primary btn-xs" ng-click="editProduct(p)" data-toggle="modal"
-                                            data-target="#myModal"><i class="fa"></i>促销
-                                    </button>
-                                    <button class="btn btn-danger btn-xs" ng-click="deleteProduct2(p)"><i
-                                            class="fa"></i>下架
-                                    </button>
-                                </td>
-                            </tr>
+                            <tbody id="bad-table">
+
                             </tbody>
                         </table>
                     </div>
@@ -589,23 +541,23 @@
 <!-- js placed at the end of the document so the pages load faster -->
 <!-- <script src="lib/jquery/jquery.min.js"></script> -->
 <script type="text/javascript" language="javascript" src="../static/lib/advanced-datatable/js/jquery.js"
-        th:src="@{lib/advanced-datatable/js/jquery.js}"></script>
+        th:src="@{/lib/advanced-datatable/js/jquery.js}"></script>
 <!-- <script src="lib/bootstrap/js/bootstrap.min.js"></script> -->
 <script class="include" type="text/javascript" src="../static/lib/jquery.dcjqaccordion.2.7.js"
-        th:src="@{lib/jquery.dcjqaccordion.2.7.js}"></script>
-<script src="../static/lib/jquery.scrollTo.min.js" th:src="@{lib/jquery.scrollTo.min.js}"></script>
-<script src="../static/lib/jquery.nicescroll.js" th:src="@{lib/jquery.nicescroll.js}" type="text/javascript"></script>
+        th:src="@{/lib/jquery.dcjqaccordion.2.7.js}"></script>
+<script src="../static/lib/jquery.scrollTo.min.js" th:src="@{/lib/jquery.scrollTo.min.js}"></script>
+<script src="../static/lib/jquery.nicescroll.js" th:src="@{/lib/jquery.nicescroll.js}" type="text/javascript"></script>
 <script type="text/javascript" language="javascript" src="../static/lib/advanced-datatable/js/jquery.dataTables.js"
-        th:src="@{lib/advanced-datatable/js/jquery.dataTables.js}"></script>
+        th:src="@{/lib/advanced-datatable/js/jquery.dataTables.js}"></script>
 <script type="text/javascript" src="../static/lib/advanced-datatable/js/DT_bootstrap.js"
-        th:src="@{lib/advanced-datatable/js/DT_bootstrap.js}"></script>
+        th:src="@{/lib/advanced-datatable/js/DT_bootstrap.js}"></script>
 <!--common script for all pages-->
-<script src="../static/lib/common-scripts.js" th:src="@{lib/common-scripts.js}"></script>
+<script src="../static/lib/common-scripts.js" th:src="@{/lib/common-scripts.js}"></script>
 <!--script for this page-->
 <script type="text/javascript" src="../static/lib/gritter/js/jquery.gritter.js"
-        th:src="@{lib/gritter/js/jquery.gritter.js}"></script>
+        th:src="@{/lib/gritter/js/jquery.gritter.js}"></script>
 <script type="text/javascript" src="../static/lib/gritter-conf.js"
-        th:src="@{lib/gritter-conf.js}"></script>
+        th:src="@{/lib/gritter-conf.js}"></script>
 <script>
     var _csrf = "[[${_csrf.token}]]";
     var contextPath = "[[${#request.contextPath}]]";
@@ -614,6 +566,8 @@
      * */
     $(document).ready(function () {
         getMe(contextPath,_csrf)
+        getLessProduct()
+        getWillGoBad()
     })
 </script>
 <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 
 @RequestMapping("/api/product")
@@ -50,32 +51,19 @@ public class ProductController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
     /**
-     * @Author lzc
+     * 导出进货单
      * */
-    //导出进货单
-    @RequestMapping("/leading-out/purchase-order")
-    public Result createPurchaseOrder( HttpServletRequest request) {
-        //System.out.println(product);
+    @RequestMapping("/purchase-order/download")
+    public void createPurchaseOrder(HttpServletResponse response,HttpServletRequest request, Principal principal) {
         try {
-            return productService.createPurchaseOrder(request);
+            productService.createPurchaseOrder(principal,request,response);
         } catch (Exception e) {
+            response.setStatus(302);
+            response.setHeader("location",request.getContextPath() + "/error?status=3");
             e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
         }
-    }
-    /**
-    * @Author lzc
-     * */
-    //删除库存不足的商品
-    @RequestMapping("/delete/less-than/warn-count")
-    public Result deleteCountLessThanWarnCountProduct(@RequestBody Product product, HttpServletRequest request) {
-        //System.out.println(product);
-        try {
-            return productService.deleteCountLessThanWarnCountProduct(product,request);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);        }
     }
     /**
      * @Author lzc
@@ -131,23 +119,31 @@ public class ProductController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 删除指定商品
+     * */
     @RequestMapping("/delete")
-    //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result deleteProduct(@RequestBody Product product,HttpServletRequest request) {
+    @ResponseBody
+    public Result deleteProduct(Product product,Principal principal) {
         //System.out.println(product);
         try {
-            return productService.deleteProduct(product,request);
+            return productService.deleteProduct(principal, product);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 修改指定商品
+     * */
     @RequestMapping("/edit")
-    //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result editProduct(@RequestBody Product product,HttpServletRequest request) {
+    @ResponseBody
+    public Result editProduct(Product product,Principal principal) {
         //System.out.println(product);
         try {
-            return productService.editProduct(product,request);
+            return productService.editProduct(principal, product);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
