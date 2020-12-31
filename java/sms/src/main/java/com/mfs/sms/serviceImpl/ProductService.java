@@ -429,21 +429,31 @@ public class ProductService {
            throw new DatabaseUpdateException("修改产品信息失败");
         }
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result listProducts(Product product,HttpServletRequest request) {
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+
+    /**
+     * 获取商品（分页）
+     * @param principal 已登录的用户主体
+     * @param product 用于分页的话应该至少包含page属性
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result listProducts(Principal principal, Product product) {
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getProductSelect()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
+        //将页数换算成起始位置
         if(product.getPage() != null) {
             product.setPage(product.getPage() * 10);
         }
         List<Product> list = productMapper.query(product);
-        return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        return new Result(1,"查询成功",list,null);
     }
 
     /**

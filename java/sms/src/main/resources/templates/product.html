@@ -8,35 +8,29 @@
     <meta name="description" content="">
     <meta name="author" content="Dashboard">
     <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
-    <title>智能监控</title>
+    <title>商品管理</title>
 
     <!-- Favicons -->
-    <link href="../staticimg/favicon.png" th:href="@{/img/favicon.png}" rel="icon">
-    <link href="../staticimg/apple-touch-icon.png" th:href="@{/img/apple-touch-icon.png}" rel="apple-touch-icon">
+    <link href="../static/img/favicon.png" th:href="@{/img/favicon.png}" rel="icon">
+    <link href="../static/img/apple-touch-icon.png" th:href="@{/img/apple-touch-icon.png}" rel="apple-touch-icon">
 
     <!-- Bootstrap core CSS -->
-    <link href="../static/lib/bootstrap/css/bootstrap.min.css" th:href="@{/lib/bootstrap/css/bootstrap.min.css}"
-          rel="stylesheet">
+    <link href="../static/lib/bootstrap/css/bootstrap.min.css" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <!--external css-->
-    <link href="../static/lib/font-awesome/css/font-awesome.css" th:href="@{/lib/font-awesome/css/font-awesome.css}"
-          rel="stylesheet"/>
-    <link href="../static/lib/gritter/css/jquery.gritter.css" th:href="@{/lib/gritter/css/jquery.gritter.css}"/>
+    <link href="../static/lib/font-awesome/css/font-awesome.css" th:href="@{/lib/font-awesome/css/font-awesome.css}" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="../static/lib/gritter/css/jquery.gritter.css"
+          th:href="@{/lib/gritter/css/jquery.gritter.css}"/>
     <link href="../static/lib/advanced-datatable/css/demo_page.css"
           th:href="@{/lib/advanced-datatable/css/demo_page.css}" rel="stylesheet"/>
-    <link href="../static/lib/advanced-datatable/css/demo_table.css"
-          th:href="@{/lib/advanced-datatable/css/demo_table.css}" rel="stylesheet"/>
     <link rel="stylesheet" href="../static/lib/advanced-datatable/css/DT_bootstrap.css"
           th:href="@{/lib/advanced-datatable/css/DT_bootstrap.css}"/>
     <!-- Custom styles for this template -->
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet">
-    <link href="../static/css/style-responsive.css" th:href="@{/css/style-responsive.css}" rel="stylesheet">
+    <link href="../static/css/style-responsive.css" th:href="@{/css/style-responsive.css}"
+          rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css"
           th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"
-            th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
-            th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 
     <!-- =======================================================
       Template Name: Dashio
@@ -280,8 +274,6 @@
                     </a>
                 </p>
                 <h5 class="centered" id="user-name"></h5>
-
-                <!-- 页面导航列表-->
                 <li class="mt">
                     <a href="index.html" th:href="@{/index}">
                         <i class="fa fa-dashboard"></i>
@@ -289,21 +281,21 @@
                     </a>
                 </li>
                 <li class="mt">
-                    <a href="monitor.html" th:href="@{/monitor}" class="active">
+                    <a href="monitor.html" onclick="return goToMonitor()" th:href="@{/monitor}">
                         <i class="fa fa-desktop"></i>
                         <span>智能监控</span>
                     </a>
                 </li>
                 <li class="sub-menu">
-                    <a href="javascript:;">
+                    <a href="javascript:;" class="active">
                         <i class="fa fa-th"></i>
                         <span>日常事务</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="product.html" onclick="return goToProduct();" th:href="@{/product}">商品管理</a></li>
-                        <li><a href="type.html" th:href="@{/type}">类型管理</a></li>
-                        <li><a href="member.html" th:href="@{/member}">会员管理</a></li>
-                        <li><a href="order.html" th:href="@{/order}">订单管理</a></li>
+                        <li><a href="product.html" th:href="@{/product}">商品管理</a></li>
+                        <li><a href="type.html">类型管理</a></li>
+                        <li><a href="number.html">会员管理</a></li>
+                        <li><a href="order.html">订单管理</a></li>
                     </ul>
                 </li>
                 <li class="sub-menu">
@@ -312,8 +304,8 @@
                         <span>系统事务</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="user.html" th:href="@{/user}">员工管理</a></li>
-                        <li><a href="role.html" th:href="@{/role}">角色管理</a></li>
+                        <li><a href="user.html">员工管理</a></li>
+                        <li><a href="role.html">角色管理</a></li>
                     </ul>
                 </li>
                 <li class="sub-menu">
@@ -322,7 +314,7 @@
                         <span>数据统计</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="finance.html" th:href="@{/finance}">财务统计</a></li>
+                        <li><a href="finance.html">财务统计</a></li>
                     </ul>
                 </li>
             </ul>
@@ -404,7 +396,12 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-            <!-- 促销 -->
+            <h3><i class="fa fa-angle-right"></i>商品管理</h3>
+            <!-- 添加商品 -->
+            <button class="btn btn-primary" ng-click="addProduct()" data-toggle="modal" data-target="#myModal"
+                    style="float: right;margin-right: 10px">添加商品
+            </button>
+            <!-- 模态框（Modal） -->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
@@ -412,118 +409,166 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="myModalLabel">
-                                折扣促销
+                                {{data.control.modalTitle }}
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <label class="col-sm-2 control-label">名称</label>
-                            <div class="col-sm-10">
-                                <input type="text" id="name-input" placeholder="商品名称" class="form-control">
-                            </div>
+                            <!-- <input type="number" ng-model="data.product.id | intFilter" placeholder="ID" class="form-control" ng-hide="data.control.modalTitle | productIdHideFilter"> -->
+                            <input type="number" ng-model="data.product.id" placeholder="ID" class="form-control"
+                                   ng-hide="data.control.modalTitle | productIdHideFilter">
                             <br>
-                            <label class="col-sm-2 control-label">保质期/(月)</label>
-                            <div class="col-sm-10">
-                                <input type="member" id="selfLife-input" placeholder="保质期/(月)"
-                                       class="form-control">
-                            </div>
+                            <input type="text" ng-model="data.product.name" placeholder="商品名称" class="form-control">
                             <br>
-                            <label class="col-sm-2 control-label">提醒/(天)</label>
-                            <div class="col-sm-10">
-                                <input type="member" id="warnBefore-input" placeholder="提醒/(天)"
-                                       class="form-control">
-                            </div>
+                            <select size="1" ng-model="data.product.typeId" class="form-control">
+                                <option ng-repeat="t in data.typeList" ng-value="t.id">{{t.name}}</option>
+                            </select>
                             <br>
-                            <label class="col-sm-2 control-label">进价/(元)</label>
-                            <div class="col-sm-10">
-                                <input type="member" id="inPrice-input" placeholder="进价/(元)"
-                                       class="form-control">
-                            </div>
+                            <input type="text" ng-model="data.product.manufacturer" placeholder="供货商"
+                                   class="form-control">
                             <br>
-                            <label class="col-sm-2 control-label">售价/(元)</label>
-                            <div class="col-sm-10">
-                                <input type="member" id="outPrice-input" placeholder="售价/(元)"
-                                       class="form-control">
-                            </div>
+                            <input type="date" ng-model="data.product.productDate" placeholder="生产日期"
+                                   class="form-control"
+                                   ng-hide="data.control.modalTitle | productIdHideFilter">
+                            <br>
+                            <input type="number" ng-model="data.product.selfLife" placeholder="保质期/(月)"
+                                   class="form-control">
+                            <br>
+                            <input type="number" ng-model="data.product.warnBefore" placeholder="提醒/(天)"
+                                   class="form-control">
+                            <br>
+                            <input type="number" ng-model="data.product.count" placeholder="库存" class="form-control">
+                            <br>
+                            <input type="number" ng-model="data.product.warnCount" placeholder="最小库存"
+                                   class="form-control">
+                            <br>
+                            <input type="number" ng-model="data.product.inPrice" placeholder="进价/(元)"
+                                   class="form-control">
+                            <br>
+                            <input type="number" ng-model="data.product.outPrice" placeholder="售价/(元)"
+                                   class="form-control">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                            <button type="button" class="btn btn-primary" onclick="submitEdit()">提交</button>
+                            <button type="button" class="btn btn-primary" ng-click="submitProduct()">提交</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-
-            <h3><i class="fa fa-angle-right"></i>库存监控</h3>
-            <form th:action="@{/api/product/purchase-order/download}" method="post">
-                <button type="submit" class="btn btn-warning">导出进货单</button>
-            </form>
-            <!-- page start-->
-            <!-- 库存预警列表 -->
-            <div class="content-panel">
-                <div class="adv-table">
-                    <div class="content-panel">
-                        <table class="display table table-bordered table table-striped table-advance table-hover"
-                               cellpadding="0" cellspacing="0"
-                               border="0">
-                            <thead>
-                            <tr>
-                                <th><i class="fa"></i>编号</th>
-                                <th><i class="fa"></i>图片</th>
-                                <th><i class="fa"></i>名称</th>
-                                <th><i class="fa"></i>类别</th>
-                                <th><i class=" fa">供货商</i></th>
-                                <th><i class=" fa">生产日期</i></th>
-                                <th><i class=" fa">保质期</i></th>
-                                <th><i class=" fa fa-question-circle">提醒</i></th>
-                                <th><i class=" fa">库存</i></th>
-                                <th><i class=" fa fa-question-circle">提醒库存</i></th>
-                                <th><i class=" fa">入库时间</i></th>
-                                <th><i class=" fa">进价</i></th>
-                                <th><i class=" fa">售价</i></th>
-                                <th><i class=" fa fa-question-circle">负责人</i></th>
-                                <th><i></i>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody id="less-table">
-
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="headModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            </button>
+                            <h4 class="modal-title">
+                                导入进货单
+                            </h4>
+                            <span style="color:#ff0000"></span>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">进货单</label>
+                                    <div class="col-sm-10">
+                                        <input type="file" class="form-control" name="file" id="leading-in-purchase"
+                                               onchange="checkFile(this.value)" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消
+                                    </button>
+                                    <button type="submit" id="importButton" class="btn btn-success"
+                                            ng-click="leadingInPurchase()">
+                                        导入
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
             </div>
-            <hr>
-            <h3><i class="fa fa-angle-right"></i>质量监控</h3>
+            <button class="btn btn-success" ng-click="addProduct()" data-toggle="modal" data-target="#myModal2"
+                    style="float: right;margin-right: 10px">导入进货单
+            </button>
+            <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="headModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            </button>
+                            <h4 class="modal-title" id="importModalLabel">
+                                修改商品图片
+                            </h4>
+                            <span id="fileMsg" style="color:red"></span>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">商品图片</label>
+                                    <div class="col-sm-10">
+                                        <input type="file" class="form-control" name="file" id="leading-in-photo"
+                                               onchange="checkFile1(this.value)" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消
+                                    </button>
+                                    <button type="submit" id="importButton1" class="btn btn-success"
+                                            ng-click="leadingInPhoto()">
+                                        修改
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
             <!-- page start-->
-            <!-- 过期警告列表 -->
             <div class="content-panel">
                 <div class="adv-table">
                     <div class="content-panel">
-                        <table class="display table table-bordered table table-striped table-advance table-hover"
-                               cellpadding="0" cellspacing="0"
-                               border="0">
+                        <table class="display table-bordered table table-striped table-advance table-hover" cellpadding="0" cellspacing="0" border="0" id="hidden-table-info">
+                            <h4><i class="fa fa-angle-right"></i>类型</h4>
+                            <select size="1" ng-change="listProduct(0)">
+                                <option value="" selected="selected">全部</option>
+                                <option ng-repeat="t in data.typeList" ng-value="t.id"><i>{{t.name}}</i></option>
+                            </select>
+                            <br>
+                            <hr>
                             <thead>
                             <tr>
                                 <th><i class="fa"></i>编号</th>
                                 <th><i class="fa"></i>图片</th>
                                 <th><i class="fa"></i>名称</th>
                                 <th><i class="fa"></i>类别</th>
-                                <th><i class=" fa">供货商</i></th>
-                                <th><i class=" fa">生产日期</i></th>
-                                <th><i class=" fa">保质期</i></th>
-                                <th><i class=" fa fa-question-circle">提醒</i></th>
-                                <th><i class=" fa">库存</i></th>
-                                <th><i class=" fa fa-question-circle">提醒库存</i></th>
-                                <th><i class=" fa">入库时间</i></th>
-                                <th><i class=" fa">进价</i></th>
-                                <th><i class=" fa">售价</i></th>
-                                <th><i class=" fa fa-question-circle">负责人</i></th>
+                                <th><i class=" fa"></i>供货商</th>
+                                <th><i class=" fa"></i>生产日期</th>
+                                <th><i class=" fa"></i>保质期(月)</th>
+                                <th><i class=" fa fa-question-circle"></i>提醒(天)</th>
+                                <th><i class=" fa"></i>库存</th>
+                                <th><i class=" fa fa-question-circle"></i>提醒库存</th>
+                                <th><i class=" fa"></i>入库时间</th>
+                                <th><i class=" fa"></i>进价</th>
+                                <th><i class=" fa"></i>售价</th>
+                                <th><i class=" fa fa-question-circle"></i>负责人</th>
+                                <th><i class=" fa"></i>商品码</th>
                                 <th><i></i>操作</th>
                             </tr>
                             </thead>
-                            <tbody id="bad-table">
+                            <tbody id="product-items">
 
                             </tbody>
                         </table>
+                        <div class="dataTables_paginate paging_bootstrap pagination">
+                            <ul>
+                                <li class="prev" ng-hide="data.control.prevHide"><a href="#" ng-click="listProduct(-1)">←
+                                    上一页</a></li>
+                                <li class="next" ng-hide="data.control.nextHide"><a href="#" ng-click="listProduct(1)">下一页
+                                    → </a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -554,6 +599,10 @@
     </footer>
     <!--footer end-->
 </section>
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"
+        th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
+        th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 <!-- js placed at the end of the document so the pages load faster -->
 <!-- <script src="lib/jquery/jquery.min.js"></script> -->
 <script type="text/javascript" language="javascript" src="../static/lib/advanced-datatable/js/jquery.js"
@@ -570,14 +619,13 @@
 <!--common script for all pages-->
 <script src="../static/lib/common-scripts.js" th:src="@{/lib/common-scripts.js}"></script>
 <!--script for this page-->
-<script type="text/javascript" src="../static/lib/gritter/js/jquery.gritter.js"
-        th:src="@{/lib/gritter/js/jquery.gritter.js}"></script>
-<script type="text/javascript" src="../static/lib/gritter-conf.js"
-        th:src="@{/lib/gritter-conf.js}"></script>
+<script type="text/javascript" src="../static/lib/gritter/js/jquery.gritter.js" th:src="@{/lib/gritter/js/jquery.gritter.js}"></script>
+<script type="text/javascript" src="../static/lib/gritter-conf.js" th:src="@{/lib/gritter-conf.js}"></script>
+
 <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"
         th:src="@{https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js}"></script>
-<script src="../static/js/monitor.js" th:src="@{/js/monitor.js}"></script>
-<script src="../static/js/base.js" th:src="@{/js/base.js}"></script>
+<script th:src="@{/js/base.js}" src="../static/js/base.js"></script>
+<script src="../static/js/product.js" th:src="@{/js/product.js}"></script>
 <script>
     var _csrf = "[[${_csrf.token}]]";
     var contextPath = "[[${#request.contextPath}]]";
@@ -585,10 +633,10 @@
      * 获取当前用户的用户信息
      * */
     $(document).ready(function () {
-        getMe(contextPath, _csrf)
-        getLessProduct()
-        getWillGoBad()
+        getMe(contextPath,_csrf)
+        getProduct()
     })
+
 </script>
 </body>
 

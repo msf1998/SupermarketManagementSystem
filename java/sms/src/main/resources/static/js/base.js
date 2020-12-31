@@ -14,6 +14,16 @@ function checkFile(file) {
     }
 }
 
+function checkExcelFile(file) {
+    var pattern = /^.*\.xls$/
+    if (pattern.test(file) != true) {
+        $("#importButton").attr("disabled", true)
+        alert("文件格式不合法");
+    } else {
+        $("#importButton").attr("disabled", false)
+    }
+}
+
 function checkPassword(password) {
     if (password == "" || password == null || password == undefined) {
         $("#change-password-btn").attr("disabled",true)
@@ -28,13 +38,13 @@ function editHead() {
     formData.append("head",head);
     formData.append("_csrf",_csrf);
     $.ajax({
-        url: url,
+        url: contextPath + "/api/user/edit/head",
         type: "post",
         async: true,
         contentType: false,
         processData:false,
         dataType: "json",
-        data: data,
+        data: formData,
         success: function (response) {
             if (response.status == 1) {
                 location.reload()
@@ -72,6 +82,10 @@ function getMe(contextPath,_csrf) {
 }
 
 function goToMonitor() {
+    return user.role.productSelect == true;
+}
+
+function goToProduct() {
     return user.role.productSelect == true;
 }
 

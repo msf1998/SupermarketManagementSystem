@@ -150,14 +150,14 @@ public class ProductController {
         }
     }
     /**
-    * @Author lzc
+    * 获取商品（分页）
     * */
     @RequestMapping("/list")
-    //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result listProducts(@RequestBody Product product, HttpServletRequest request) {
+    @ResponseBody
+    public Result listProducts(Principal principal, Product product) {
         //System.out.println(product);
         try {
-            return productService.listProducts(product,request);
+            return productService.listProducts(principal, product);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
