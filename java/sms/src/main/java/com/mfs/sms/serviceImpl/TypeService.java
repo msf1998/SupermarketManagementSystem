@@ -31,80 +31,109 @@ public class TypeService {
     @Autowired
     private UserService userService;
 
-    @Transactional(isolation = Isolation.DEFAULT,timeout = 5)
-    public Result addType(Type type, HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+    /**
+     * 添加新类型
+     * @param principal 已登录的用户主体
+     * @param type 类型信息
+     * @return Result
+     **/
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result addType(Principal principal,Type type) {
+        //参数检查
+        Result result = delegatingParameterObjectCheck(type, "addType");
+        if (result != null) {
+            return result;
+        }
+
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getTypeInsert()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
+        //修改数据库数据
         type.setId(null);
-        type.setParentId(user.getUsername());
+        type.setParentId(user.getId());
         type.setCreateTime(new Date());
         int res = typeMapper.add(type);
         if (res == 1) {
-            Type type1 = new Type();
-            type1.setOrder("id");
-            type1.setPage(0);
-            List<Type> list = typeMapper.query(type1);
-            //更新token
-            return new Result(1,"添加成功",list, CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            return new Result(1,"添加成功",null,null);
         } else {
             return new Result(2,"添加失败",null,null);
         }
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result deleteType(Type type,HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil .getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+
+    /**
+     * 删除类型，正在被使用的不能删除
+     * @param principal 已登录的
+     * @param type 查询参数
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result deleteType(Principal principal,Type type) {
+        //参数检查
+        Result result = delegatingParameterObjectCheck(type, "deleteType");
+        if (result != null) {
+            return result;
+        }
+
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
-        //权限验证
         if (!user.getRole().getTypeDelete()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
         //查看该类型是否正在被使用
         Product p = new Product();
         p.setTypeId(type.getId());
-        List<Product> list1 = productMapper.query(p);
-        if (!(list1 == null || list1.size() == 0)) {
-            return new Result(2,"该类型正在被"+list1.size()+"个商品使用",null,null);
+        List<Product> list = productMapper.query(p);
+        if (!(list == null || list.size() == 0)) {
+            return new Result(2,"该类型正在被"+list.size()+"个商品使用",null,null);
         }
         int res = typeMapper.delete(type);
         if (res == 1) {
-            Type type1 = new Type();
-            type1.setOrder("id");
-            type1.setPage(0);
-            List<Type> list = typeMapper.query(type1);
-            return new Result(1,"删除成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            return new Result(1,"删除成功",null,null);
         } else {
             return new Result(2,"删除失败",null,null);
         }
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result editType(Type type, HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+
+    /**
+     * 修改类型信息
+     * @param principal 已登录的用户主体
+     * @param type 类型信息
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result editType(Principal principal,Type type) {
+        //参数检查
+        Result result = delegatingParameterObjectCheck(type, "editType");
+        if (result != null) {
+            return result;
+        }
+
+        //鉴权
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getTypeUpdate()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
+        //更新数据库数据
         int res = typeMapper.update(type);
         if (res == 1) {
-            Type type1 = new Type();
-            type1.setOrder("id");
-            type1.setPage(0);
-            List<Type> list = typeMapper.query(type1);
-            return new Result(1,"修改成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            return new Result(1,"修改成功",null,null);
         } else {
             return new Result(2,"修改失败",null,null);
         }
@@ -135,5 +164,35 @@ public class TypeService {
         List<Type> list = typeMapper.query(type);
         System.out.println(list);
         return new Result(1,"查询成功",list,null);
+    }
+
+    private Result delegatingParameterObjectCheck(Object object,String context) {
+        switch (context) {
+            case "deleteType" : {
+                Type type = (Type)object;
+                if (type.getId() == null) {
+                    return new Result(2,"类型不合法",null,null);
+                }
+                break;
+            }
+            case "addType" : {
+                Type type = (Type) object;
+                if (type.getName() == null || type.getName().length() > 16) {
+                    return new Result(2,"类型名称不合法",null,null);
+                }
+                break;
+            }
+            case "editType" : {
+                Type type = (Type) object;
+                if (type.getId() == null) {
+                    return new Result(2,"类型不合法",null,null);
+                }
+                if (type.getName() == null || type.getName().length() > 16) {
+                    return new Result(2,"类型名称不合法",null,null);
+                }
+                break;
+            }
+        }
+        return null;
     }
 }

@@ -301,7 +301,7 @@
                     </a>
                     <ul class="sub">
                         <li><a href="product.html" onclick="return goToProduct();" th:href="@{/product}">商品管理</a></li>
-                        <li><a href="type.html" th:href="@{/type}">类型管理</a></li>
+                        <li><a href="type.html" onclick="return goToType();" th:href="@{/type}">类型管理</a></li>
                         <li><a href="member.html" th:href="@{/member}">会员管理</a></li>
                         <li><a href="order.html" th:href="@{/order}">订单管理</a></li>
                     </ul>
@@ -357,7 +357,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    <button type="button" class="btn btn-default" id="leading-in-head-close-btn" data-dismiss="modal">
                                         取消
                                     </button>
                                     <button type="button" id="leading-in-head-btn" class="btn  btn-danger"
@@ -391,7 +391,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    <button type="button" class="btn btn-default" id="change-password-close-btn" data-dismiss="modal">
                                         取消
                                     </button>
                                     <button type="button" id="change-password-btn" class="btn  btn-danger"

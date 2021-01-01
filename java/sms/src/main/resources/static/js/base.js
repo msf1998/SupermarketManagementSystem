@@ -37,6 +37,7 @@ function editHead() {
         data: formData,
         success: function (response) {
             if (response.status == 1) {
+                $("#leading-in-head-close-btn").click()
                 getMe(contextPath,_csrf)
             } else {
                 alert(response.describe)
@@ -79,6 +80,10 @@ function goToProduct() {
     return user.role.productSelect == true;
 }
 
+function goToType() {
+    return user.role.typeSelect == true;
+}
+
 function dateFormat(fmt, date) {
     let ret;
     const opt = {
@@ -105,6 +110,7 @@ function defaultAjaxRequest(data,url) {
         type: "post",
         data: data,
         success: function (response) {
+            $("#change-password-close-btn").click()
             alert(response.describe)
         }
     })

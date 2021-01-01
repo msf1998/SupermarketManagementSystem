@@ -16,7 +16,7 @@ public class Type {
     private Integer id;
     private String name;
     private Date createTime;
-    private String parentId;
+    private Integer parentId;
     private User parent;
 
     //为实现业务逻辑所需属性
