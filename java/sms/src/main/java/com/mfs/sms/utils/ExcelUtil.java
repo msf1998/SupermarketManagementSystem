@@ -50,7 +50,7 @@ public class ExcelUtil {
 
     }
 
-    public static List<Map<String,String>> resd(String path) {
+    public static List<Map<String,String>> read(String path) {
         List<Map<String,String>> list = new ArrayList<>();
         try {
             File file = new File(path);
@@ -77,6 +77,7 @@ public class ExcelUtil {
                 workbook.close();
             }
         } catch (Exception e) {
+            list.clear();
             e.printStackTrace();
         }
         return list;

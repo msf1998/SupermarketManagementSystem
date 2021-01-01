@@ -227,6 +227,7 @@ public class UserService {
         }
         return new Result(2,"修改失败",null,null);
     }
+
     /**
      * 修改当前登录用户的头像
      * @param principal 登录主体
@@ -241,12 +242,11 @@ public class UserService {
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
-
-        //验证上传合法性
-        if (head == null) {
-            return new Result(2,"上传文件为空",null,null);
-        }
         String name = head.getOriginalFilename();
+        //验证上传合法性
+        if (head == null || !(name.endsWith(".jpg") || name.endsWith(".png"))) {
+            return new Result(2,"仅支持jpg和png格式的图片",null,null);
+        }
         if (!(name.endsWith(".jpg") || name.endsWith(".png"))) {
             return new Result(2,"仅支持.jpg或者.png格式的图片",null,null);
         }

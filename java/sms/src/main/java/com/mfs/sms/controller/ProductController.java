@@ -4,6 +4,7 @@ import com.mfs.sms.pojo.Product;
 import com.mfs.sms.pojo.Result;
 import com.mfs.sms.serviceImpl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.SpringCglibInfo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,40 +20,6 @@ public class ProductController {
 
 
     /**
-     * 根据id获取商品
-    * */
-    @RequestMapping("/get")
-    @ResponseBody
-    public Result getProduct(Product product, Principal principal) {
-        try {
-            return productService.getProduct(principal,product);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
-        }
-    }
-    //导入进货单
-    @RequestMapping("/leading-in/photo")
-    public Result leadingInPhoto(HttpServletRequest request, @RequestParam("file")MultipartFile file,@RequestParam("id") String id){
-        try {
-            return productService.editProductPhoto(request,file,id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
-        }
-    }
-    //导入进货单
-    @RequestMapping("/leading-in/purchase-order")
-    public Result leadingInPurchaseOrder(HttpServletRequest request, @RequestParam("file")MultipartFile file){
-        try {
-            return productService.leadingInPurchaseOrder(request,file);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
-        }
-    }
-
-    /**
      * 导出进货单
      * */
     @RequestMapping("/purchase-order/download")
@@ -65,55 +32,47 @@ public class ProductController {
             e.printStackTrace();
         }
     }
+
+
     /**
-     * @Author lzc
+     * 下载商品二维码
      * */
-    //修改将要过期的商品
-    @RequestMapping("/edit/will/go-bad")
-    public Result editWillGoBadProduct(@RequestBody Product product, HttpServletRequest request) {
+    @RequestMapping("/qcode/download")
+    public void downloadQCode(String name, Principal principal,HttpServletRequest request, HttpServletResponse response) {
         try {
-            return productService.editWillGoBadProduct(product,request);
+            productService.downloadQCode(principal,request, response,name);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);        }
+            response.setStatus(302);
+            response.setHeader("location",request.getContextPath() + "/error");
+            return;
+        }
     }
 
     /**
-     * 获取将要变质的商品
-     * */
-    @RequestMapping("/list/bad")
-    @ResponseBody
-    public Result listWillGoBadProduct(Principal principal) {
-        try {
-            return productService.listWillGoBadProduct(principal);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);        }
-    }
-
-    /**
-     * 获取库存过少的商品的列表
-     * */
-    @RequestMapping("/list/less")
-    @ResponseBody
-    public Result listCountLessThanWarnCountProduct(Principal principal) {
-        try {
-            return productService.listCountLessThanWarnCountProduct(principal);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);        }
-    }
-
-    //增删改查
-    /**
-     * @Author lzc
+     * 添加商品
      * */
     @RequestMapping("/add")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result addProduct(@RequestBody  Product product, HttpServletRequest request) {
+    public Result addProduct(Product product, Principal principal) {
         //System.out.println(product);
         try {
-            return productService.addProduct(product,request);
+            return productService.addProduct(principal,product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
+
+    /**
+     * 导入进货单来添加商品
+     * */
+    @RequestMapping("/add/excel")
+    @ResponseBody
+    public Result leadingInPurchaseOrder(@RequestParam("file")MultipartFile file,Principal principal){
+        try {
+            return productService.leadingInPurchaseOrder(principal,file);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
@@ -149,6 +108,34 @@ public class ProductController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 修改商品图片
+     **/
+    @RequestMapping("/edit/photo")
+    @ResponseBody
+    public Result leadingInPhoto(@RequestParam("file")MultipartFile file,@RequestParam("id") String id,Principal principal){
+        try {
+            return productService.editProductPhoto(principal,file,id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
+
+    /**
+     * 修改将要过期的商品
+     * */
+    @RequestMapping("/edit/bad")
+    @ResponseBody
+    public Result editWillGoBadProduct(Product product,Principal principal) {
+        try {
+            return productService.editWillGoBadProduct(principal,product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);        }
+    }
+
     /**
     * 获取商品（分页）
     * */
@@ -162,5 +149,45 @@ public class ProductController {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
+    }
+
+    /**
+     * 根据id获取商品
+     * */
+    @RequestMapping("/get")
+    @ResponseBody
+    public Result getProduct(Product product, Principal principal) {
+        try {
+            return productService.getProduct(principal,product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);
+        }
+    }
+
+    /**
+     * 获取将要变质的商品
+     * */
+    @RequestMapping("/list/bad")
+    @ResponseBody
+    public Result listWillGoBadProduct(Principal principal) {
+        try {
+            return productService.listWillGoBadProduct(principal);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);        }
+    }
+
+    /**
+     * 获取库存过少的商品的列表
+     * */
+    @RequestMapping("/list/less")
+    @ResponseBody
+    public Result listCountLessThanWarnCountProduct(Principal principal) {
+        try {
+            return productService.listCountLessThanWarnCountProduct(principal);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(3,"服务器异常",null,null);        }
     }
 }

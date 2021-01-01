@@ -15,7 +15,7 @@ function getWillGoBad() {
                     for (let i = 0; i < o.length; i ++) {
                         $("#bad-table").append("<tr>\n" +
                             "                                <td>" + o[i].id + "</td>\n" +
-                            "                                <td><img src='" + contextPath + "/head/" + o[i].photo + "' style='width: 30px;height: 30px;'></td>\n" +
+                            "                                <td><img src='" + contextPath + "/product/" + o[i].photo + "' style='width: 30px;height: 30px;'></td>\n" +
                             "                                <td>" + o[i].name + "</td>\n" +
                             "                                <td>" + o[i].type.name + "</td>\n" +
                             "                                <td>" + o[i].manufacturer + "</td>\n" +
@@ -62,7 +62,7 @@ function getLessProduct() {
                     for (let i = 0; i< o.length; i ++) {
                         $("#less-table").append("<tr>\n" +
                             "                                <td>" + o[i].id + "</td>\n" +
-                            "                                <td><img src='" + contextPath + "/head/" + o[i].photo + "' style='width: 30px;height: 30px;'></td>\n" +
+                            "                                <td><img src='" + contextPath + "/product/" + o[i].photo + "' style='width: 30px;height: 30px;'></td>\n" +
                             "                                <td>" + o[i].name + "</td>\n" +
                             "                                <td>" + o[i].type.name + "</td>\n" +
                             "                                <td>" + o[i].manufacturer + "</td>\n" +
@@ -138,7 +138,7 @@ function submitEdit() {
     let inPrice = $("#inPrice-input").val();
     let outPrice = $("#outPrice-input").val();
     $.ajax({
-        url: contextPath + "/api/product/edit",
+        url: contextPath + "/api/product/edit/bad",
         type: "post",
         data: {
             "_csrf": _csrf,

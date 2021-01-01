@@ -14,16 +14,6 @@ function checkFile(file) {
     }
 }
 
-function checkExcelFile(file) {
-    var pattern = /^.*\.xls$/
-    if (pattern.test(file) != true) {
-        $("#importButton").attr("disabled", true)
-        alert("文件格式不合法");
-    } else {
-        $("#importButton").attr("disabled", false)
-    }
-}
-
 function checkPassword(password) {
     if (password == "" || password == null || password == undefined) {
         $("#change-password-btn").attr("disabled",true)
@@ -47,7 +37,7 @@ function editHead() {
         data: formData,
         success: function (response) {
             if (response.status == 1) {
-                location.reload()
+                getMe(contextPath,_csrf)
             } else {
                 alert(response.describe)
             }

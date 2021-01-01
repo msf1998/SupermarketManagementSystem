@@ -56,10 +56,11 @@ public class LogAspect {
             } else {
                 Object[] args = joinPoint.getArgs();
                 for (Object o : args) {
-                    if (o.getClass().getName().contains("principal")) {
+                    if (o.getClass().getName().contains("Principal")) {
                         Principal principal = (Principal)o;
                         String userId = principal.getName();
                         creator = userId == null ? "未知" : userId;
+                        break;
                     }
                 }
             }
@@ -81,7 +82,7 @@ public class LogAspect {
             } else {
                 Object[] args = joinPoint.getArgs();
                 for (Object o : args) {
-                    if (o.getClass().getName().contains("principal")) {
+                    if (o.getClass().getName().contains("Principal")) {
                         Principal principal = (Principal)o;
                         String userId = principal.getName();
                         creator = userId == null ? "未知" : userId;

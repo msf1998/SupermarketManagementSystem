@@ -15,9 +15,11 @@
     <link href="../static/img/apple-touch-icon.png" th:href="@{/img/apple-touch-icon.png}" rel="apple-touch-icon">
 
     <!-- Bootstrap core CSS -->
-    <link href="../static/lib/bootstrap/css/bootstrap.min.css" th:href="@{/lib/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link href="../static/lib/bootstrap/css/bootstrap.min.css" th:href="@{/lib/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
     <!--external css-->
-    <link href="../static/lib/font-awesome/css/font-awesome.css" th:href="@{/lib/font-awesome/css/font-awesome.css}" rel="stylesheet"/>
+    <link href="../static/lib/font-awesome/css/font-awesome.css" th:href="@{/lib/font-awesome/css/font-awesome.css}"
+          rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="../static/lib/gritter/css/jquery.gritter.css"
           th:href="@{/lib/gritter/css/jquery.gritter.css}"/>
     <link href="../static/lib/advanced-datatable/css/demo_page.css"
@@ -397,64 +399,225 @@
                 </div><!-- /.modal -->
             </div>
             <h3><i class="fa fa-angle-right"></i>商品管理</h3>
-            <!-- 添加商品 -->
-            <button class="btn btn-primary" ng-click="addProduct()" data-toggle="modal" data-target="#myModal"
-                    style="float: right;margin-right: 10px">添加商品
-            </button>
-            <!-- 模态框（Modal） -->
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            <!-- 修改商品 -->
+            <div class="modal fade" id="edit-product-modal" tabindex="-1" role="dialog"
+                 aria-labelledby="edit-product-modalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalLabel">
-                                {{data.control.modalTitle }}
+                            <h4 class="modal-title" id="edit-product-modalLabel">
+                                修改商品信息
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <!-- <input type="number" ng-model="data.product.id | intFilter" placeholder="ID" class="form-control" ng-hide="data.control.modalTitle | productIdHideFilter"> -->
-                            <input type="number" ng-model="data.product.id" placeholder="ID" class="form-control"
-                                   ng-hide="data.control.modalTitle | productIdHideFilter">
-                            <br>
-                            <input type="text" ng-model="data.product.name" placeholder="商品名称" class="form-control">
-                            <br>
-                            <select size="1" ng-model="data.product.typeId" class="form-control">
-                                <option ng-repeat="t in data.typeList" ng-value="t.id">{{t.name}}</option>
-                            </select>
-                            <br>
-                            <input type="text" ng-model="data.product.manufacturer" placeholder="供货商"
-                                   class="form-control">
-                            <br>
-                            <input type="date" ng-model="data.product.productDate" placeholder="生产日期"
-                                   class="form-control"
-                                   ng-hide="data.control.modalTitle | productIdHideFilter">
-                            <br>
-                            <input type="number" ng-model="data.product.selfLife" placeholder="保质期/(月)"
-                                   class="form-control">
-                            <br>
-                            <input type="number" ng-model="data.product.warnBefore" placeholder="提醒/(天)"
-                                   class="form-control">
-                            <br>
-                            <input type="number" ng-model="data.product.count" placeholder="库存" class="form-control">
-                            <br>
-                            <input type="number" ng-model="data.product.warnCount" placeholder="最小库存"
-                                   class="form-control">
-                            <br>
-                            <input type="number" ng-model="data.product.inPrice" placeholder="进价/(元)"
-                                   class="form-control">
-                            <br>
-                            <input type="number" ng-model="data.product.outPrice" placeholder="售价/(元)"
-                                   class="form-control">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                            <button type="button" class="btn btn-primary" ng-click="submitProduct()">提交</button>
+                            <form>
+                                <input type="hidden" id="edit-id-input">
+                                <label class="col-sm-2 control-label">商品名称</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="edit-name-input" onchange="enableSubmit()" maxlength="32"
+                                           placeholder="商品名称" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">类别</label>
+                                <div class="col-sm-10">
+                                    <select size="1" id="edit-type-select" onchange="enableSubmit()"
+                                            class="form-control" required>
+                                    </select>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">供货商</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="edit-manufacturer-input" onchange="enableSubmit()"
+                                           maxlength="255" placeholder="供货商" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">生产日期</label>
+                                <div class="col-sm-10">
+                                    <input type="date" id="edit-productDate-input" onchange="enableSubmit()"
+                                           placeholder="生产日期" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">保质期/月</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="edit-selfLife-input" onchange="enableSubmit()"
+                                           placeholder="保质期/(月)" class="form-control" required>
+                                </div>
+                                <label class="col-sm-2 control-label">提醒/天</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="edit-warnBefore-input" onchange="enableSubmit()"
+                                           placeholder="提醒/(天)" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">库存</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="edit-count-input" onchange="enableSubmit()"
+                                           placeholder="库存" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">最小库存</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="edit-warnCount-input" onchange="enableSubmit()"
+                                           placeholder="最小库存" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">进价/元</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="edit-inPrice-input" onchange="enableSubmit()"
+                                           placeholder="进价/(元)" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">售价/元</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="edit-outPrice-input" onchange="enableSubmit()"
+                                           placeholder="售价/(元)" class="form-control" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" id="edit-product-modal-btn"
+                                            data-dismiss="modal">关闭
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="edit-product-btn"
+                                            onclick="submitEdit()" disabled>提交
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-            <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="headModalLabel"
+            <!-- 修改商品图片 -->
+            <div class="modal fade" id="edit-productPhoto-modal" tabindex="-1" role="dialog"
+                 aria-labelledby="edit-productPhoto-modalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            </button>
+                            <h4 class="modal-title" id="edit-productPhoto-modalLabel">
+                                修改商品图片
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input type="hidden" id="edit-productPhoto-id-input">
+                                <label class="col-sm-2 control-label">商品图片</label>
+                                <div class="col-sm-10">
+                                    <input type="file" class="form-control" name="file" id="edit-productPhoto-input"
+                                           onchange="checkFilePhoto(this.value)" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="edit-productPhoto-close-btn" class="btn btn-danger"
+                                        data-dismiss="modal">取消
+                                </button>
+                                <button type="submit" id="edit-productPhoto-btn" class="btn btn-success"
+                                        onclick="submitEditPhoto()" disabled>
+                                    修改
+                                </button>
+                            </div>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+            <!-- 添加商品 -->
+            <div class="modal fade" id="add-product-modal" tabindex="-1" role="dialog"
+                 aria-labelledby="add-product-modalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="add-product-modalLabel">
+                                修改商品信息
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <br>
+                                <label class="col-sm-2 control-label">商品编号</label>
+                                <div class="col-sm-10">
+                                    <input type="number"  id="add-id-input" maxlength="20"
+                                           placeholder="商品id" class="form-control" required>
+                                </div>
+                                <label class="col-sm-2 control-label">商品名称</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="add-name-input" maxlength="32"
+                                           placeholder="商品名称" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">类别</label>
+                                <div class="col-sm-10">
+                                    <select size="1" id="add-type-select"
+                                            class="form-control" required>
+                                    </select>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">供货商</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="add-manufacturer-input"
+                                           maxlength="32" placeholder="供货商" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">生产日期</label>
+                                <div class="col-sm-10">
+                                    <input type="date" id="add-productDate-input"
+                                           placeholder="生产日期" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">保质期/月</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="add-selfLife-input"
+                                           placeholder="保质期/(月)" class="form-control" required>
+                                </div>
+                                <label class="col-sm-2 control-label">提醒/天</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="add-warnBefore-input"
+                                           placeholder="提醒/(天)" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">库存</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="add-count-input"
+                                           placeholder="库存" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">最小库存</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="add-warnCount-input"
+                                           placeholder="最小库存" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">进价/元</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="add-inPrice-input"
+                                           placeholder="进价/(元)" class="form-control" required>
+                                </div>
+                                <br>
+                                <label class="col-sm-2 control-label">售价/元</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="add-outPrice-input"
+                                           placeholder="售价/(元)" class="form-control" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" id="add-product-modal-btn"
+                                            data-dismiss="modal">关闭
+                                    </button>
+                                    <button type="reset" class="btn btn-default">
+                                        重置
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="add-product-btn"
+                                            onclick="submitAdd()" >提交
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+            <!-- 导入进货单 -->
+            <div class="modal fade" id="lead-in-excelModal" tabindex="-1" role="dialog" aria-labelledby="headModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -467,19 +630,19 @@
                             <span style="color:#ff0000"></span>
                         </div>
                         <div class="modal-body">
-                            <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post">
+                            <form>
                                 <div class="form-group">
                                     <label class="col-sm-2 control-label">进货单</label>
                                     <div class="col-sm-10">
-                                        <input type="file" class="form-control" name="file" id="leading-in-purchase"
-                                               onchange="checkFile(this.value)" required>
+                                        <input type="file" class="form-control" name="file" id="lead-in-excel-input"
+                                               onchange="checkExcelFile(this.value)" required>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消
+                                    <button type="button" class="btn btn-danger" id="lead-in-excel-close-btn" data-dismiss="modal">取消
                                     </button>
-                                    <button type="submit" id="importButton" class="btn btn-success"
-                                            ng-click="leadingInPurchase()">
+                                    <button type="button" id="lead-in-excel-btn" class="btn btn-success"
+                                            onclick="leadInExcel()" disabled>
                                         导入
                                     </button>
                                 </div>
@@ -488,52 +651,22 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-            <button class="btn btn-success" ng-click="addProduct()" data-toggle="modal" data-target="#myModal2"
+            <button class="btn btn-success" ng-click="addProduct()" data-toggle="modal" data-target="#lead-in-excelModal"
                     style="float: right;margin-right: 10px">导入进货单
             </button>
-            <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="headModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            </button>
-                            <h4 class="modal-title" id="importModalLabel">
-                                修改商品图片
-                            </h4>
-                            <span id="fileMsg" style="color:red"></span>
-                        </div>
-                        <div class="modal-body">
-                            <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post">
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">商品图片</label>
-                                    <div class="col-sm-10">
-                                        <input type="file" class="form-control" name="file" id="leading-in-photo"
-                                               onchange="checkFile1(this.value)" required>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消
-                                    </button>
-                                    <button type="submit" id="importButton1" class="btn btn-success"
-                                            ng-click="leadingInPhoto()">
-                                        修改
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal -->
-            </div>
+            <!-- 添加商品 -->
+            <button class="btn btn-primary" data-toggle="modal" data-target="#add-product-modal"
+                    style="float: right;margin-right: 10px">添加商品
+            </button>
             <!-- page start-->
             <div class="content-panel">
                 <div class="adv-table">
                     <div class="content-panel">
-                        <table class="display table-bordered table table-striped table-advance table-hover" cellpadding="0" cellspacing="0" border="0" id="hidden-table-info">
+                        <table class="display table-bordered table table-striped table-advance table-hover"
+                               cellpadding="0" cellspacing="0" border="0" id="hidden-table-info">
                             <h4><i class="fa fa-angle-right"></i>类型</h4>
-                            <select size="1" ng-change="listProduct(0)">
+                            <select size="1" onchange="getProductByType()" id="type-select">
                                 <option value="" selected="selected">全部</option>
-                                <option ng-repeat="t in data.typeList" ng-value="t.id"><i>{{t.name}}</i></option>
                             </select>
                             <br>
                             <hr>
@@ -563,9 +696,9 @@
                         </table>
                         <div class="dataTables_paginate paging_bootstrap pagination">
                             <ul>
-                                <li class="prev" ng-hide="data.control.prevHide"><a href="#" ng-click="listProduct(-1)">←
+                                <li class="prev" id="beforePage-btn"><a href="#" onclick="beforePage()">←
                                     上一页</a></li>
-                                <li class="next" ng-hide="data.control.nextHide"><a href="#" ng-click="listProduct(1)">下一页
+                                <li class="next" id="nextPage-btn" ><a href="#" onclick="nextPage()" >下一页
                                     → </a></li>
                             </ul>
                         </div>
@@ -619,7 +752,8 @@
 <!--common script for all pages-->
 <script src="../static/lib/common-scripts.js" th:src="@{/lib/common-scripts.js}"></script>
 <!--script for this page-->
-<script type="text/javascript" src="../static/lib/gritter/js/jquery.gritter.js" th:src="@{/lib/gritter/js/jquery.gritter.js}"></script>
+<script type="text/javascript" src="../static/lib/gritter/js/jquery.gritter.js"
+        th:src="@{/lib/gritter/js/jquery.gritter.js}"></script>
 <script type="text/javascript" src="../static/lib/gritter-conf.js" th:src="@{/lib/gritter-conf.js}"></script>
 
 <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"
@@ -633,8 +767,9 @@
      * 获取当前用户的用户信息
      * */
     $(document).ready(function () {
-        getMe(contextPath,_csrf)
+        getMe(contextPath, _csrf)
         getProduct()
+        getType()
     })
 
 </script>

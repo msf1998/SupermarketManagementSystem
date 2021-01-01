@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @RequestMapping("/api/type")
 @RestController
@@ -48,12 +49,16 @@ public class TypeController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     *
+     * */
     @RequestMapping("/list")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result listType(@RequestBody Type type, HttpServletRequest request) {
-        //System.out.println(type);
+    public Result listType(Type type, Principal principal) {
+        System.out.println(type);
         try {
-            return typeService.listTypes(type,request);
+            return typeService.listTypes(principal, type);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
