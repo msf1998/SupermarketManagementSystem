@@ -5,7 +5,7 @@
 <mapper namespace="com.mfs.sms.mapper.RoleMapper">
     <sql id="roleColumn">
         id,name,product_insert,product_delete,product_update,product_select,type_insert,type_delete,type_update,type_select,
-    number_insert,number_delete,number_update,number_select,order_insert,order_delete,order_update,order_select,user_insert,
+    member_insert,member_delete,member_update,member_select,order_insert,order_delete,order_update,order_select,user_insert,
     user_delete,user_update,user_select,role_insert,role_delete,role_update,role_select,create_time,parent
     </sql>
     <resultMap id="role" type="Role">
@@ -19,10 +19,10 @@
         <result property="typeDelete" column="type_delete"></result>
         <result property="typeUpdate" column="type_update"></result>
         <result property="typeSelect" column="type_select"></result>
-        <result property="numberInsert" column="number_insert"></result>
-        <result property="numberDelete" column="number_delete"></result>
-        <result property="numberUpdate" column="number_update"></result>
-        <result property="numberSelect" column="number_select"></result>
+        <result property="memberInsert" column="member_insert"></result>
+        <result property="memberDelete" column="member_delete"></result>
+        <result property="memberUpdate" column="member_update"></result>
+        <result property="memberSelect" column="member_select"></result>
         <result property="orderInsert" column="order_insert"></result>
         <result property="orderDelete" column="order_delete"></result>
         <result property="orderUpdate" column="order_update"></result>
@@ -42,7 +42,7 @@
         insert into tb_role(
         <include refid="roleColumn"></include>
         ) values(#{id},#{name},#{productInsert},#{productDelete},#{productUpdate},#{productSelect},#{typeInsert},
-        #{typeDelete},#{typeUpdate},#{typeSelect},#{numberInsert},#{numberDelete},#{numberUpdate},#{numberSelect},
+        #{typeDelete},#{typeUpdate},#{typeSelect},#{memberInsert},#{memberDelete},#{memberUpdate},#{memberSelect},
         #{orderInsert},#{orderDelete},#{orderUpdate},#{orderSelect},#{userInsert},#{userDelete},#{userUpdate},#{userSelect},
         #{roleInsert},#{roleDelete},#{roleUpdate},#{roleSelect},#{createTime},#{parentId})
     </insert>
@@ -87,17 +87,17 @@
             <if test="typeSelect != null">
                 type_select = #{typeSelect},
             </if>
-            <if test="numberInsert != null">
-                number_insert = #{numberInsert},
+            <if test="memberInsert != null">
+                member_insert = #{memberInsert},
             </if>
-            <if test="numberDelete != null">
-                number_delete = #{numberDelete},
+            <if test="memberDelete != null">
+                member_delete = #{memberDelete},
             </if>
-            <if test="numberUpdate != null">
-                number_update = #{numberUpdate},
+            <if test="memberUpdate != null">
+                member_update = #{memberUpdate},
             </if>
-            <if test="numberSelect != null">
-                number_select = #{numberSelect},
+            <if test="memberSelect != null">
+                member_select = #{memberSelect},
             </if>
             <if test="orderInsert != null">
                 order_insert = #{orderInsert},

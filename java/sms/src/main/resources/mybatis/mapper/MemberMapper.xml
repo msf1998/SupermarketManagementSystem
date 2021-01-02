@@ -81,7 +81,7 @@
             <if test="idNumber != null and idNumber != ''">
                 and n.id_number = #{idNumber}
             </if>
-            <if test="parentId != null and parentId != ''">
+            <if test="parentId != null">
                 and n.parent = #{parentId}
             </if>
             <if test="deleted != null">

@@ -26,10 +26,10 @@ public class Role implements Comparable<Role>{
     private Boolean typeUpdate;
     private Boolean typeSelect;
     //对会员的操作权限
-    private Boolean numberInsert;
-    private Boolean numberDelete;
-    private Boolean numberUpdate;
-    private Boolean numberSelect;
+    private Boolean memberInsert;
+    private Boolean memberDelete;
+    private Boolean memberUpdate;
+    private Boolean memberSelect;
     //对订单的操作权限
     private Boolean orderInsert;
     private Boolean orderDelete;
@@ -77,16 +77,16 @@ public class Role implements Comparable<Role>{
         if (typeSelect == true && r.getTypeSelect() == false) {
             return 1;
         }
-        if (numberInsert == true && r.getNumberInsert() == false) {
+        if (memberInsert == true && r.getMemberInsert() == false) {
             return 1;
         }
-        if (numberDelete == true && r.getNumberDelete() == false) {
+        if (memberDelete == true && r.getMemberDelete() == false) {
             return 1;
         }
-        if (numberUpdate == true && r.getNumberUpdate() == false) {
+        if (memberUpdate == true && r.getMemberUpdate() == false) {
             return 1;
         }
-        if (numberSelect == true && r.getNumberSelect() == false) {
+        if (memberSelect == true && r.getMemberSelect() == false) {
             return 1;
         }
         if (orderInsert == true && r.getOrderInsert() == false) {

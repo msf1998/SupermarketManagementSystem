@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="Dashboard">
     <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
-    <title>商品管理</title>
+    <title>会员管理</title>
 
     <!-- Favicons -->
     <link href="../static/img/favicon.png" th:href="@{/img/favicon.png}" rel="icon">
@@ -24,13 +24,13 @@
           th:href="@{/lib/gritter/css/jquery.gritter.css}"/>
     <link href="../static/lib/advanced-datatable/css/demo_page.css"
           th:href="@{/lib/advanced-datatable/css/demo_page.css}" rel="stylesheet"/>
+    <link href="../static/lib/advanced-datatable/css/demo_table.css"
+          th:href="@{/lib/advanced-datatable/css/demo_table.css}" rel="stylesheet"/>
     <link rel="stylesheet" href="../static/lib/advanced-datatable/css/DT_bootstrap.css"
           th:href="@{/lib/advanced-datatable/css/DT_bootstrap.css}"/>
     <!-- Custom styles for this template -->
     <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet">
-    <link href="../static/css/style-responsive.css" th:href="@{/css/style-responsive.css}"
-          rel="stylesheet">
-
+    <link href="../static/css/style-responsive.css" th:href="@{/css/style-responsive.css}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css"
           th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}">
 
@@ -283,7 +283,7 @@
                     </a>
                 </li>
                 <li class="mt">
-                    <a href="monitor.html" onclick="return goToMonitor()" th:href="@{/monitor}">
+                    <a href="monitor.html" onclick="return goToMonitor();" th:href="@{/monitor}">
                         <i class="fa fa-desktop"></i>
                         <span>智能监控</span>
                     </a>
@@ -294,9 +294,9 @@
                         <span>日常事务</span>
                     </a>
                     <ul class="sub">
-                        <li><a href="product.html" th:href="@{/product}">商品管理</a></li>
-                        <li><a href="type.html" onclick="goToType();" th:href="@{/type}">类型管理</a></li>
-                        <li><a href="member.html" onclick="return goToMember();" th:href="@{/member}">会员管理</a></li>
+                        <li><a href="product.html" onclick="return goToProduct();" th:href="@{/product}">商品管理</a></li>
+                        <li><a href="type.html" onclick="return goToType();" th:href="@{/type}">类型管理</a></li>
+                        <li><a href="member.html" th:href="@{/member}">会员管理</a></li>
                         <li><a href="order.html">订单管理</a></li>
                     </ul>
                 </li>
@@ -351,7 +351,8 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" id="leading-in-head-close-btn" data-dismiss="modal">
+                                    <button type="button" class="btn btn-default" id="leading-in-head-close-btn"
+                                            data-dismiss="modal">
                                         取消
                                     </button>
                                     <button type="button" id="leading-in-head-btn" class="btn  btn-danger"
@@ -385,7 +386,8 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" id="change-password-close-btn" data-dismiss="modal">
+                                    <button type="button" class="btn btn-default" id="change-password-close-btn"
+                                            data-dismiss="modal">
                                         取消
                                     </button>
                                     <button type="button" id="change-password-btn" class="btn  btn-danger"
@@ -398,308 +400,70 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-            <h3><i class="fa fa-angle-right"></i>商品管理</h3>
-            <!-- 修改商品 -->
-            <div class="modal fade" id="edit-product-modal" tabindex="-1" role="dialog"
-                 aria-labelledby="edit-product-modalLabel"
+            <!-- 模态框（Modal） -->
+            <div class="modal fade" id="edit-add-member-modal" tabindex="-1" role="dialog" aria-labelledby="edit-add-member-modalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="edit-product-modalLabel">
-                                修改商品信息
+                            <h4 class="modal-title" id="edit-add-member-modalLabel">
+
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <form>
-                                <input type="hidden" id="edit-id-input">
-                                <label class="col-sm-2 control-label">商品名称</label>
-                                <div class="col-sm-10">
-                                    <input type="text" id="edit-name-input" onchange="enableSubmit()" maxlength="32"
-                                           placeholder="商品名称" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">类别</label>
-                                <div class="col-sm-10">
-                                    <select size="1" id="edit-type-select" onchange="enableSubmit()"
-                                            class="form-control" required>
-                                    </select>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">供货商</label>
-                                <div class="col-sm-10">
-                                    <input type="text" id="edit-manufacturer-input" onchange="enableSubmit()"
-                                           maxlength="255" placeholder="供货商" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">生产日期</label>
-                                <div class="col-sm-10">
-                                    <input type="date" id="edit-productDate-input" onchange="enableSubmit()"
-                                           placeholder="生产日期" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">保质期/月</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="edit-selfLife-input" onchange="enableSubmit()"
-                                           placeholder="保质期/(月)" class="form-control" required>
-                                </div>
-                                <label class="col-sm-2 control-label">提醒/天</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="edit-warnBefore-input" onchange="enableSubmit()"
-                                           placeholder="提醒/(天)" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">库存</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="edit-count-input" onchange="enableSubmit()"
-                                           placeholder="库存" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">最小库存</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="edit-warnCount-input" onchange="enableSubmit()"
-                                           placeholder="最小库存" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">进价/元</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="edit-inPrice-input" onchange="enableSubmit()"
-                                           placeholder="进价/(元)" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">售价/元</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="edit-outPrice-input" onchange="enableSubmit()"
-                                           placeholder="售价/(元)" class="form-control" required>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" id="edit-product-modal-btn"
-                                            data-dismiss="modal">关闭
-                                    </button>
-                                    <button type="button" class="btn btn-primary" id="edit-product-btn"
-                                            onclick="submitEdit()" disabled>提交
-                                    </button>
-                                </div>
-                            </form>
+                            <input type="hidden" id="edit-add-id-input">
+                            <input type="text" onchange="enableSubmit()" id="edit-add-name-input" placeholder="姓名" maxlength="4"
+                                   class="form-control">
+                            <br>
+                            <input type="number" onchange="enableSubmit()" id="edit-add-phone-input" placeholder="手机号" maxlength="11"
+                                   class="form-control">
+                            <br>
+                            <input type="text" onchange="enableSubmit()" id="edit-add-idNumber-input" placeholder="身份证号" maxlength="18"
+                                   class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="edit-add-member-close-btn">关闭</button>
+                            <button type="button" class="btn btn-primary" id="edit-add-member-btn" onclick="submitMember()" disabled>提交</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-            <!-- 修改商品图片 -->
-            <div class="modal fade" id="edit-productPhoto-modal" tabindex="-1" role="dialog"
-                 aria-labelledby="edit-productPhoto-modalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            </button>
-                            <h4 class="modal-title" id="edit-productPhoto-modalLabel">
-                                修改商品图片
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <input type="hidden" id="edit-productPhoto-id-input">
-                                <label class="col-sm-2 control-label">商品图片</label>
-                                <div class="col-sm-10">
-                                    <input type="file" class="form-control" name="file" id="edit-productPhoto-input"
-                                           onchange="checkFilePhoto(this.value)" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" id="edit-productPhoto-close-btn" class="btn btn-danger"
-                                        data-dismiss="modal">取消
-                                </button>
-                                <button type="submit" id="edit-productPhoto-btn" class="btn btn-success"
-                                        onclick="submitEditPhoto()" disabled>
-                                    修改
-                                </button>
-                            </div>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal -->
-            </div>
-            <!-- 添加商品 -->
-            <div class="modal fade" id="add-product-modal" tabindex="-1" role="dialog"
-                 aria-labelledby="add-product-modalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="add-product-modalLabel">
-                                修改商品信息
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <br>
-                                <label class="col-sm-2 control-label">商品编号</label>
-                                <div class="col-sm-10">
-                                    <input type="number"  id="add-id-input" maxlength="20"
-                                           placeholder="商品id" class="form-control" required>
-                                </div>
-                                <label class="col-sm-2 control-label">商品名称</label>
-                                <div class="col-sm-10">
-                                    <input type="text" id="add-name-input" maxlength="32"
-                                           placeholder="商品名称" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">类别</label>
-                                <div class="col-sm-10">
-                                    <select size="1" id="add-type-select"
-                                            class="form-control" required>
-                                    </select>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">供货商</label>
-                                <div class="col-sm-10">
-                                    <input type="text" id="add-manufacturer-input"
-                                           maxlength="32" placeholder="供货商" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">生产日期</label>
-                                <div class="col-sm-10">
-                                    <input type="date" id="add-productDate-input"
-                                           placeholder="生产日期" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">保质期/月</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="add-selfLife-input"
-                                           placeholder="保质期/(月)" class="form-control" required>
-                                </div>
-                                <label class="col-sm-2 control-label">提醒/天</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="add-warnBefore-input"
-                                           placeholder="提醒/(天)" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">库存</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="add-count-input"
-                                           placeholder="库存" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">最小库存</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="add-warnCount-input"
-                                           placeholder="最小库存" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">进价/元</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="add-inPrice-input"
-                                           placeholder="进价/(元)" class="form-control" required>
-                                </div>
-                                <br>
-                                <label class="col-sm-2 control-label">售价/元</label>
-                                <div class="col-sm-10">
-                                    <input type="number" id="add-outPrice-input"
-                                           placeholder="售价/(元)" class="form-control" required>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" id="add-product-modal-btn"
-                                            data-dismiss="modal">关闭
-                                    </button>
-                                    <button type="reset" class="btn btn-default">
-                                        重置
-                                    </button>
-                                    <button type="button" class="btn btn-primary" id="add-product-btn"
-                                            onclick="submitAdd()" >提交
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal -->
-            </div>
-            <!-- 导入进货单 -->
-            <div class="modal fade" id="lead-in-excelModal" tabindex="-1" role="dialog" aria-labelledby="headModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            </button>
-                            <h4 class="modal-title">
-                                导入进货单
-                            </h4>
-                            <span style="color:#ff0000"></span>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">进货单</label>
-                                    <div class="col-sm-10">
-                                        <input type="file" class="form-control" name="file" id="lead-in-excel-input"
-                                               onchange="checkExcelFile(this.value)" required>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" id="lead-in-excel-close-btn" data-dismiss="modal">取消
-                                    </button>
-                                    <button type="button" id="lead-in-excel-btn" class="btn btn-success"
-                                            onclick="leadInExcel()" disabled>
-                                        导入
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal -->
-            </div>
-            <button class="btn btn-success" ng-click="addProduct()" data-toggle="modal" data-target="#lead-in-excelModal"
-                    style="float: right;margin-right: 10px">导入进货单
-            </button>
-            <!-- 添加商品 -->
-            <button class="btn btn-primary" data-toggle="modal" data-target="#add-product-modal"
-                    style="float: right;margin-right: 10px">添加商品
+
+            <h3><i class="fa fa-angle-right"></i>会员管理</h3>
+            <!-- <button type="button" class="btn btn-warning" hidden>批量删除</button> -->
+            <button class="btn btn-primary " onclick="addMember()" data-toggle="modal" data-target="#edit-add-member-modal"
+                    style="float: right;margin-right: 10px">添加会员
             </button>
             <!-- page start-->
             <div class="content-panel">
                 <div class="adv-table">
                     <div class="content-panel">
-                        <table class="display table-bordered table table-striped table-advance table-hover"
-                               cellpadding="0" cellspacing="0" border="0" id="hidden-table-info">
-                            <h4><i class="fa fa-angle-right"></i>类型</h4>
-                            <select size="1" onchange="getProductByType()" id="type-select">
-                                <option value="" selected="selected">全部</option>
-                            </select>
-                            <br>
+                        <table class="table display table-bordered table-striped table-advance table-hover" cellpadding="0" cellspacing="0"
+                               border="0" id="hidden-table-info">
                             <hr>
                             <thead>
                             <tr>
                                 <th><i class="fa"></i>编号</th>
-                                <th><i class="fa"></i>图片</th>
                                 <th><i class="fa"></i>名称</th>
-                                <th><i class="fa"></i>类别</th>
-                                <th><i class=" fa"></i>供货商</th>
-                                <th><i class=" fa"></i>生产日期</th>
-                                <th><i class=" fa"></i>保质期(月)</th>
-                                <th><i class=" fa fa-question-circle"></i>提醒(天)</th>
-                                <th><i class=" fa"></i>库存</th>
-                                <th><i class=" fa fa-question-circle"></i>提醒库存</th>
-                                <th><i class=" fa"></i>入库时间</th>
-                                <th><i class=" fa"></i>进价</th>
-                                <th><i class=" fa"></i>售价</th>
-                                <th><i class=" fa fa-question-circle"></i>负责人</th>
-                                <th><i class=" fa"></i>商品码</th>
-                                <th><i></i>操作</th>
+                                <th><i class="fa"></i>手机号</th>
+                                <th><i class="fa"></i>身份证号</th>
+                                <th><i class="fa"></i>积分</th>
+                                <th><i class=" fa">创建时间</i></th>
+                                <th><i class=" fa fa-question-circle">负责人</i></th>
+                                <th><i>操作</i></th>
                             </tr>
                             </thead>
-                            <tbody id="product-items">
+                            <tbody id="member-items">
 
                             </tbody>
                         </table>
                         <div class="dataTables_paginate paging_bootstrap pagination">
                             <ul>
-                                <li class="prev" id="beforePage-btn"><a href="#" onclick="beforePage()">←
-                                    上一页</a></li>
-                                <li class="next" id="nextPage-btn" ><a href="#" onclick="nextPage()" >下一页
-                                    → </a></li>
+                                <li class="prev"  id="before-page-btn"><a onclick="beforePage()">← 上一页</a>
+                                </li>
+                                <li class="next" id="next-page-btn"><a onclick="nextPage()">下一页 → </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -725,17 +489,13 @@
                 -->
                 Created with Dashio template by <a href="https://templatemag.com/">TemplateMag</a>
             </div>
-            <a href="product.html#" class="go-top">
+            <a href="number.html#" class="go-top">
                 <i class="fa fa-angle-up"></i>
             </a>
         </div>
     </footer>
     <!--footer end-->
 </section>
-<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"
-        th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
-<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
-        th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 <!-- js placed at the end of the document so the pages load faster -->
 <!-- <script src="lib/jquery/jquery.min.js"></script> -->
 <script type="text/javascript" language="javascript" src="../static/lib/advanced-datatable/js/jquery.js"
@@ -756,10 +516,14 @@
         th:src="@{/lib/gritter/js/jquery.gritter.js}"></script>
 <script type="text/javascript" src="../static/lib/gritter-conf.js" th:src="@{/lib/gritter-conf.js}"></script>
 
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"
+        th:href="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
+        th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"
-        th:src="@{https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js}"></script>
-<script th:src="@{/js/base.js}" src="../static/js/base.js"></script>
-<script src="../static/js/product.js" th:src="@{/js/product.js}"></script>
+        th:href="@{https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js}"></script>
+<script src="../static/js/base.js" th:src="@{/js/base.js}"></script>
+<script src="../static/js/member.js" th:src="@{/js/member.js}"></script>
 <script>
     var _csrf = "[[${_csrf.token}]]";
     var contextPath = "[[${#request.contextPath}]]";
@@ -768,11 +532,10 @@
      * */
     $(document).ready(function () {
         getMe(contextPath, _csrf)
-        getProduct()
-        getType()
+        getMember()
     })
-
 </script>
+
 </body>
 
 </html>

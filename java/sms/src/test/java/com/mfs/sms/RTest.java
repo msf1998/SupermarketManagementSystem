@@ -8,6 +8,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import javax.print.attribute.standard.Finishings;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -20,12 +22,17 @@ public class RTest {
     RedisTemplate<String, Object> redisTemplate;
 
     @org.junit.jupiter.api.Test
-    public void t() throws CollectionClassMapObjectUtil.TypeException {
-        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+    public void t() throws CollectionClassMapObjectUtil.TypeException, IOException {
+        /*ValueOperations<String, Object> ops = redisTemplate.opsForValue();
         ops.set("he", new Test(""));
         Object he = ops.get("he");
         Test map = new CollectionClassMapObjectUtil().map((Map<?, ?>) he, Test.class);
-        System.out.println(map);
+        System.out.println(map);*/
+        System.out.println("hello.php");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("012321321".matches("[0-9]{1,10}"));
     }
 }
 

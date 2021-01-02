@@ -84,6 +84,10 @@ function goToType() {
     return user.role.typeSelect == true;
 }
 
+function goToMember() {
+    return user.role.memberSelect == true;
+}
+
 function dateFormat(fmt, date) {
     let ret;
     const opt = {

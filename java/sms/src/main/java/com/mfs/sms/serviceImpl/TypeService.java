@@ -25,8 +25,6 @@ public class TypeService {
     @Autowired
     private TypeMapper typeMapper;
     @Autowired
-    private UserMapper userMapper;
-    @Autowired
     private ProductMapper productMapper;
     @Autowired
     private UserService userService;
@@ -166,6 +164,12 @@ public class TypeService {
         return new Result(1,"查询成功",list,null);
     }
 
+    /**
+     * 根据场景进行参数检查
+     * @param object 被检查的对象
+     * @param context 业务场景
+     * @return Result 或 null
+     **/
     private Result delegatingParameterObjectCheck(Object object,String context) {
         switch (context) {
             case "deleteType" : {

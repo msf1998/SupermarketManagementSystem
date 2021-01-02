@@ -32,7 +32,7 @@ public class OrderDetailService {
             return new Result(4,"用户不存在",null,null);
         }
         //权限验证
-        if (!user.getRole().getNumberSelect()) {
+        if (!user.getRole().getMemberSelect()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
         List<OrderDetail> list = orderDetailMapper.query(orderDetail);

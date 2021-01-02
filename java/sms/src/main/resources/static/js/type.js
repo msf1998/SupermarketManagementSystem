@@ -1,5 +1,5 @@
 let page = 0;
-let order = "name";
+let order = "id";
 let type = [];
 
 function getType() {

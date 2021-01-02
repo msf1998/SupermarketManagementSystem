@@ -182,7 +182,7 @@ public class OrderService {
             return new Result(4,"用户不存在",null,null);
         }
         //权限验证
-        if (!user.getRole().getNumberInsert()) {
+        if (!user.getRole().getMemberInsert()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
 

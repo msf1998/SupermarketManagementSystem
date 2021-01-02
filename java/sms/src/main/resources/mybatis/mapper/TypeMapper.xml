@@ -59,7 +59,7 @@
             <if test="name != null and name != ''">
                 and t.name like concat("%",#{name},"%")
             </if>
-            <if test="parentId != null and parentId != ''">
+            <if test="parentId != null">
                 and t.parent = #{parentId}
             </if>
             and t.parent = u.id

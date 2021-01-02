@@ -18,7 +18,7 @@ public class Member {
     private String idNumber;
     private Date createTime;
     private Double score;
-    private String parentId;
+    private Integer parentId;
     private User parent;
     private Boolean deleted;
 

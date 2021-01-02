@@ -76,7 +76,7 @@
             <if test="creatorId != null and creatorId != ''">
                 and o.creator = #{creatorId}
             </if>
-            <if test="parentId != null and parentId != ''">
+            <if test="parentId != null">
                 and o.parent = #{parentId}
             </if>
             <if test="createTime != null">
