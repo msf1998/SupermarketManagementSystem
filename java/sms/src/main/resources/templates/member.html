@@ -297,7 +297,7 @@
                         <li><a href="product.html" onclick="return goToProduct();" th:href="@{/product}">商品管理</a></li>
                         <li><a href="type.html" onclick="return goToType();" th:href="@{/type}">类型管理</a></li>
                         <li><a href="member.html" th:href="@{/member}">会员管理</a></li>
-                        <li><a href="order.html">订单管理</a></li>
+                        <li><a href="order.html" onclick="return goToOrder();" th:href="@{/order}">订单管理</a></li>
                     </ul>
                 </li>
                 <li class="sub-menu">
@@ -400,7 +400,7 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-            <!-- 模态框（Modal） -->
+            <!-- 修改、添加会员 -->
             <div class="modal fade" id="edit-add-member-modal" tabindex="-1" role="dialog" aria-labelledby="edit-add-member-modalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
@@ -496,6 +496,10 @@
     </footer>
     <!--footer end-->
 </section>
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"
+        th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
+        th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 <!-- js placed at the end of the document so the pages load faster -->
 <!-- <script src="lib/jquery/jquery.min.js"></script> -->
 <script type="text/javascript" language="javascript" src="../static/lib/advanced-datatable/js/jquery.js"
@@ -516,10 +520,8 @@
         th:src="@{/lib/gritter/js/jquery.gritter.js}"></script>
 <script type="text/javascript" src="../static/lib/gritter-conf.js" th:src="@{/lib/gritter-conf.js}"></script>
 
-<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"
-        th:href="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
-<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
-        th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+
+
 <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"
         th:href="@{https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js}"></script>
 <script src="../static/js/base.js" th:src="@{/js/base.js}"></script>

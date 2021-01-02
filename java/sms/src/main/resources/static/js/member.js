@@ -142,21 +142,29 @@ function submitMember() {
 
 function deleteMember(id) {
     if (canMemberDelete()) {
-        $.ajax({
-            url: contextPath + "/api/member/delete",
-            type: "post",
-            data: {
-                "_csrf": _csrf,
-                "id": id
-            },
-            success: function (response) {
-                if (response.status == 1) {
-                    getMember()
-                } else {
-                    alert(response.describe)
-                }
+        let i;
+        for (i = 0; i < member.length; i ++) {
+            if (id == member[i].id) {
+                break;
             }
-        })
+        }
+        if (confirm("确认删除" + member[i].name +"?")) {
+            $.ajax({
+                url: contextPath + "/api/member/delete",
+                type: "post",
+                data: {
+                    "_csrf": _csrf,
+                    "id": id
+                },
+                success: function (response) {
+                    if (response.status == 1) {
+                        getMember()
+                    } else {
+                        alert(response.describe)
+                    }
+                }
+            })
+        }
     } else {
         alert("抱歉，您无此权限")
     }
@@ -164,12 +172,12 @@ function deleteMember(id) {
 
 function nextPage() {
     page++;
-    getType();
+    getMember();
 }
 
 function beforePage() {
     page--;
-    getType();
+    getMember();
 }
 
 function canMemberSelect() {

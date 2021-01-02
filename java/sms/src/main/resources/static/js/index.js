@@ -48,6 +48,9 @@ function getProductById(id,count) {
 }
 
 function pay() {
+    if (productIds.length <= 0) {
+        alert("没有商品");
+    }
     let memberId = $("#member-id-input").val();
     let formData = new FormData();
     formData.append("_csrf",_csrf)

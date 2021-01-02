@@ -88,6 +88,10 @@ function goToMember() {
     return user.role.memberSelect == true;
 }
 
+function goToOrder() {
+    return user.role.orderSelect == true;
+}
+
 function dateFormat(fmt, date) {
     let ret;
     const opt = {

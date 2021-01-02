@@ -30,6 +30,7 @@ public class OrderController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
     /**
      * 创建订单完成支付
      * */
@@ -44,45 +45,49 @@ public class OrderController {
             return new Result(3,"服务器异常",null,null);
         }
     }
-    @RequestMapping("/add")
-    //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result addOrder(@RequestBody Order order, HttpServletRequest request) {
-        //System.out.println(order);
-        try {
-            return orderService.addOrder(order,request);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(3,"服务器异常",null,null);
-        }
-    }
+
+    /**
+     * 删除订单
+     * */
     @RequestMapping("/delete")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result deleteOrder(@RequestBody Order order,HttpServletRequest request) {
+    public Result deleteOrder(Order order,Principal principal) {
         //System.out.println(order);
         try {
-            return orderService.deleteOrder(order,request);
+            return orderService.deleteOrder(principal, order);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 修改订单，仅能改备注
+     * */
     @RequestMapping("/edit")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result editOrder(@RequestBody Order order,HttpServletRequest request) {
+    public Result editOrder(Principal principal, Order order) {
         //System.out.println(order);
         try {
-            return orderService.editOrder(order,request);
+            return orderService.editOrder(principal, order);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 获取订单列表（可分页）
+     * */
     @RequestMapping("/list")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result listOrder(@RequestBody Order order, HttpServletRequest request) {
+    public Result listOrder(Principal principal,Order order) {
         //System.out.println(order);
         try {
-            return orderService.listOrder(order,request);
+            return orderService.listOrder(principal,order);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
