@@ -65,7 +65,7 @@ function editMember(id) {
     $("#edit-add-id-input").val(m.id)
     $("#edit-add-name-input").val(m.name)
     $("#edit-add-phone-input").val(m.phone)
-    $("#edit-add-idNumber-input").attr("type", "hidden")
+    $("#edit-add-idNumber-input").attr("readonly", true)
     $("#edit-add-member-btn").attr("disabled",true)
 }
 
@@ -74,7 +74,8 @@ function addMember() {
     $("#edit-add-id-input").val("")
     $("#edit-add-name-input").val("")
     $("#edit-add-phone-input").val("")
-    $("#edit-add-idNumber-input").attr("hidden", false)
+    $("#edit-add-idNumber-input").attr("readonly", false)
+    $("#edit-add-idNumber-input").val("")
     $("#edit-add-member-btn").attr("disabled",true)
 }
 

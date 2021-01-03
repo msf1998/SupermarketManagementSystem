@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class RoleService {
     private RoleMapper roleMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserService userService;
 
     @Transactional(isolation = Isolation.DEFAULT,timeout = 5)
     public Result addRole(Role role, HttpServletRequest request) {
@@ -114,20 +117,28 @@ public class RoleService {
             return new Result(2,"修改失败",null,null);
         }
     }
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 5)
-    public Result listRole(Role role, HttpServletRequest request) {
-        String userId = RequestUtil.getUserId(request);
-        User user = userMapper.queryByUsername(userId);
+
+    /**
+     * 获取角色列表
+     * @param principal 已登录的用户主体
+     * @param role 查询参数
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    public Result listRole(Principal principal, Role role) {
+        String username = principal.getName();
+        User user = userService.quicklyGetUserByUsername(username);
         if (user == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getRoleSelect()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
         if (role.getPage() != null) {
             role.setPage(role.getPage() * 10);
         }
         List<Role> list = roleMapper.query(role);
-        return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+        return new Result(1,"查询成功",list,null);
     }
 }

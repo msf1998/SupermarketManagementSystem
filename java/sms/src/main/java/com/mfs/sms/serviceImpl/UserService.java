@@ -39,98 +39,100 @@ public class UserService {
     @Autowired
     private LogUtil logUtil;
 
-    @Transactional(isolation = Isolation.DEFAULT,timeout = 20)
-    public Result addUser(User user, HttpServletRequest request) {
+    /**
+     * 添加用户
+     * @param principal 已登录的用户主体
+     * @param user 要添加的用户
+     * @return Result
+     * */
+    @Transactional(isolation = Isolation.SERIALIZABLE,timeout = 20)
+    public Result addUser(Principal principal,User user) {
+        Result result = delegatingCheckUser(user, "addUser");
+        if (result != null) {
+            return result;
+        }
         //验证是否登录
-        String userId = RequestUtil.getUserId(request);
-        User user1 = userMapper.queryByUsername(userId);
+        String username = principal.getName();
+        User user1 = quicklyGetUserByUsername(username);
         if (user1 == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user1.getRole().getUserInsert()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
-        //授予的角色的权限等级不能高于操作这本身
+
+        //授予的角色的权限等级不能高于操作者本身
         Role role = roleMapper.queryById(user.getRoleId());
+        if (role == null) {
+            return new Result(2,"角色不存在",null,null);
+        }
         if (role.compareTo(user1.getRole()) == 1) {
             return new Result(2,"授予权限过高",null,null);
         }
+
         User user3 = userMapper.queryByUsername(user.getUsername());
+        //用户已存在
         if(user3 != null) {
             if (user3.getDeleted()) {
-                String salt = SaltGenerator.generatorSalt();
-                user.setPassword(user.getPassword() == null ? CryptUtil.getMessageDigestByMD5(CryptUtil.getMessageDigestByMD5("123") + salt) : CryptUtil.getMessageDigestByMD5(user.getPassword() + salt));
+                user.setPassword(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(
+                        (user.getPassword() == null || user.getPassword().equals(""))
+                                ? CryptUtil.getMessageDigestByMD5("123") : user.getPassword()));
                 user.setHead("default.jpg");
                 user.setCreateTime(new Date());
                 user.setDeleted(false);
                 int res = userMapper.update(user);
                 if (res == 1) {
-                    User user2 = new User();
-                    user2.setOrder("id");
-                    user2.setPage(0);
-                    user2.setDeleted(false);
-                    List<User> list = userMapper.query(user2);
-                    //更新token
-                    return new Result(1,"添加成功",list, CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+                    return new Result(1,"添加成功",null,null);
                 } else {
                     return new Result(2,"添加失败",null,null);
                 }
             }
             return new Result(2,"该账号已存在",null,null);
         }
-        String salt = SaltGenerator.generatorSalt();
-        user.setPassword(user.getPassword() == null ? CryptUtil.getMessageDigestByMD5("123" + salt) : CryptUtil.getMessageDigestByMD5(user.getPassword() + salt));
+        user.setPassword(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(
+                (user.getPassword() == null || user.getPassword().equals(""))
+                        ? CryptUtil.getMessageDigestByMD5("123") : user.getPassword()));
         user.setHead("default.jpg");
         user.setCreateTime(new Date());
         user.setDeleted(false);
 
         int res = userMapper.add(user);
         if (res == 1) {
-            User user2 = new User();
-            user2.setOrder("id");
-            user2.setPage(0);
-            user2.setDeleted(false);
-            List<User> list = userMapper.query(user2);
-            for (int i = 0;i < list.size(); i ++) {
-                list.get(i).setPassword(null);
-            }
-            //更新token
-            return new Result(1,"添加成功",list, CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            return new Result(1,"添加成功",null,null);
         } else {
             return new Result(2,"添加失败",null,null);
         }
     }
 
+    /**
+     * 删除用户（逻辑删除）
+     * @param principal 已登录的用户主体
+     * @param user 删除参数
+     * @return Result
+     * */
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
-    public Result deleteUser(User user,HttpServletRequest request) {
-        //验证是否登录
-        String userId = RequestUtil .getUserId(request);
-        User user1 = userMapper.queryByUsername(userId);
+    public Result deleteUser(Principal principal,User user) {
+        Result result = delegatingCheckUser(user, "deleteUser");
+        if (result != null) {
+            return result;
+        }
+        //鉴权
+        String username = principal.getName();
+        User user1 = quicklyGetUserByUsername(username);
         if (user1 == null) {
             return new Result(4,"用户不存在",null,null);
         }
-        //权限验证
         if (!user1.getRole().getUserDelete()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
-        if (user.getUsername().equals(userId)) {
+        if (user.getId().equals(user1.getId())) {
             return new Result(2,"不能删除自己",null,null);
         }
-        if (user.getUsername().equals("1")) {
-            return new Result(2,"不能删除root用户",null,null);
-        }
+
         user.setDeleted(true);
         int res = userMapper.update(user);
         if (res == 1) {
-            User user2 = new User();
-            user2.setOrder("id");
-            user2.setPage(0);
-            user2.setDeleted(false);
-            List<User> list = userMapper.query(user2);
-            for (int i = 0;i < list.size(); i ++) {
-                list.get(i).setPassword(null);
-            }
-            return new Result(1,"删除成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+            return new Result(1,"删除成功",null,null);
         } else {
             return new Result(2,"删除失败",null,null);
         }
@@ -142,7 +144,7 @@ public class UserService {
      * @param user 要修改的用户信息
      * @return Result
      * */
-    @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
+    @Transactional(isolation = Isolation.REPEATABLE_READ,timeout = 20)
     public Result editUser(Principal principal, User user) throws RedisUpdateException {
         //验证输入的合法性
         Result result = delegatingCheckUser(user, "editUser");
@@ -178,27 +180,39 @@ public class UserService {
         }
     }
 
+    /**
+     * 获取用户列表(最多可一次获取十个)
+     * @param principal 已登录的用户主体
+     * @param user 查询参数
+     * @return Result
+     * */
     @Transactional(isolation = Isolation.READ_COMMITTED,timeout = 20)
-    public Result listUser(User user,HttpServletRequest request) {
-        String userId = RequestUtil.getUserId(request);
-        User user1 = userMapper.queryByUsername(userId);
-        //System.out.println(user1);
+    public Result listUser(Principal principal, User user) {
+        //鉴权
+        String username = principal.getName();
+        User user1 = quicklyGetUserByUsername(username);
         if (user1 == null) {
             return new Result(4,"用户不存在",null,null);
         }
         if (!user1.getRole().getUserSelect()) {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
+
+        //分页设置
         if (user.getPage() != null) {
             user.setPage(user.getPage() * 10);
         }
+        if (user.getOffset() == null) {
+            user.setOffset(10);
+        }
         user.setDeleted(false);
         List<User> list = userMapper.query(user);
+        //清除敏感信息
         for (int i = 0;i < list.size(); i ++) {
             list.get(i).setPassword(null);
         }
-        //System.out.println(list);
-        return new Result(1,"查询成功",list,CryptUtil.encryptByDES(userId + "##" + new Date().getTime()));
+
+        return new Result(1,"查询成功",list,null);
     }
 
     /**
@@ -499,10 +513,8 @@ public class UserService {
             }
             //修改用户信息（角色，名字）
             case "editUser" : {
-                result = user.checkUsername();
-                if (result != null) {
-                    result.setStatus(2);
-                    return result;
+                if (user.getId() == null || user.getId() < 0) {
+                    return new Result(2,"用户id不合法",null,null);
                 }
                 if (user.getName() != null) {
                     result = user.checkName();
@@ -517,11 +529,39 @@ public class UserService {
                         return new Result(2,"该角色不存在",null,null);
                     }
                 }
-                user.setId(null);
+                if (user.getName() == null && user.getRoleId() == null) {
+                    return new Result(2,"无修改信息",null,null);
+                }
+                user.setUsername(null);
                 user.setPassword(null);
                 user.setHead(null);
                 user.setCreateTime(null);
                 user.setDeleted(null);
+                break;
+            }
+            //删除用户
+            case "deleteUser": {
+                if (user.getId() == null) {
+                    return new Result(2,"用户id不合法",null,null);
+                }
+                user.setUsername(null);
+                user.setPassword(null);
+                user.setHead(null);
+                user.setCreateTime(null);
+                user.setDeleted(null);
+                break;
+            }
+            //添加用户
+            case "addUser" : {
+                if (user.getUsername() == null || !user.getUsername().contains("@")) {
+                    return new Result(2,"用户名不合法",null,null);
+                }
+                if (user.getRoleId() == null || user.getRoleId() < 0) {
+                    return new Result(2,"角色不合法",null,null);
+                }
+                if (user.getName() == null || user.getName().length() > 4) {
+                    return new Result(2,"用户姓名不合法",null,null);
+                }
                 break;
             }
         }

@@ -22,23 +22,32 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 添加用户
+     * */
     @RequestMapping("/add")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result addProduct(@RequestBody User user, HttpServletRequest request) {
+    public Result addProduct(User user,Principal principal) {
         //System.out.println(type);
         try {
-            return userService.addUser(user,request);
+            return userService.addUser(principal,user);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 删除用户
+     * */
     @RequestMapping("/delete")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result deleteUser(@RequestBody User user,HttpServletRequest request) {
+    public Result deleteUser(User user,Principal principal) {
         //System.out.println(user);
         try {
-            return userService.deleteUser(user,request);
+            return userService.deleteUser(principal,user);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
@@ -50,7 +59,7 @@ public class UserController {
     @RequestMapping("/edit")
     @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result editUser(@RequestBody User user,Principal principal) {
+    public Result editUser(User user,Principal principal) {
         System.out.println(user);
         try {
             return userService.editUser(principal,user);
@@ -59,18 +68,26 @@ public class UserController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 获取用户列表（可分页）
+     * */
     @RequestMapping("/list")
+    @ResponseBody
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result listUser(@RequestBody User user, HttpServletRequest request) {
+    public Result listUser(Principal principal,User user) {
         //System.out.println(user);
         try {
-            return userService.listUser(user,request);
+            return userService.listUser(principal,user);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
 
+    /**
+     * 修改密码
+     * */
     @RequestMapping("/edit/password")
     @ResponseBody
     public Result editPassword(@RequestParam("password") String password,Principal principal) {
@@ -87,7 +104,7 @@ public class UserController {
      * */
     @RequestMapping("/edit/head")
     @ResponseBody
-    public Result editHead(@RequestBody MultipartFile head, Principal principal) {
+    public Result editHead(MultipartFile head, Principal principal) {
         try {
             return userService.editHead(principal,head);
         } catch (Exception e) {
@@ -149,7 +166,7 @@ public class UserController {
      * */
     @RequestMapping("/check")
     //@CrossOrigin(allowCredentials = "true",origins = {"*"})
-    public Result checkExist(@RequestBody User user) {
+    public Result checkExist(User user) {
         //System.out.println(user);
         try {
             return userService.checkExist(user);

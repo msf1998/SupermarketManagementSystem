@@ -92,6 +92,10 @@ function goToOrder() {
     return user.role.orderSelect == true;
 }
 
+function goToUser() {
+    return user.role.userSelect == true;
+}
+
 function dateFormat(fmt, date) {
     let ret;
     const opt = {

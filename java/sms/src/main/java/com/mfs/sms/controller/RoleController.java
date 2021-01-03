@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sun.print.PSPrinterJob;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/role")
@@ -49,12 +51,16 @@ public class RoleController {
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 获取角色列表
+     * */
     @RequestMapping("/list")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result listRole(@RequestBody Role role, HttpServletRequest request) {
+    public Result listRole(Role role, Principal principal) {
         //System.out.println(role);
         try {
-            return roleService.listRole(role,request);
+            return roleService.listRole(principal, role);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
