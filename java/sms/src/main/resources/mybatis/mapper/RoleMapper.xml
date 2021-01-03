@@ -8,6 +8,11 @@
     member_insert,member_delete,member_update,member_select,order_insert,order_delete,order_update,order_select,user_insert,
     user_delete,user_update,user_select,role_insert,role_delete,role_update,role_select,create_time,parent
     </sql>
+    <sql id="roleUserColumn">
+        r.id,r.name,r.product_insert,r.product_delete,r.product_update,r.product_select,r.type_insert,r.type_delete,r.type_update,r.type_select,
+    r.member_insert,r.member_delete,r.member_update,r.member_select,r.order_insert,r.order_delete,r.order_update,r.order_select,r.user_insert,
+    r.user_delete,r.user_update,r.user_select,r.role_insert,r.role_delete,r.role_update,r.role_select,r.create_time,r.parent,u.id as uid,u.name as uname
+    </sql>
     <resultMap id="role" type="Role">
         <id property="id" column="id"></id>
         <result property="name" column="name"></result>
@@ -37,6 +42,10 @@
         <result property="roleSelect" column="role_select"></result>
         <result property="createTime" column="create_time"></result>
         <result property="parentId" column="parent"></result>
+        <association property="parent" javaType="User">
+            <id property="id" column="parent"></id>
+            <result property="name" column="uname"></result>
+        </association>
     </resultMap>
     <insert id="add" parameterType="Role">
         insert into tb_role(
@@ -139,28 +148,29 @@
         where id = #{id}
     </update>
     <select id="queryById" parameterType="Integer" resultMap="role">
-        select <include refid="roleColumn"></include>
-        from tb_role
-        where id = #{id}
+        select <include refid="roleUserColumn"></include>
+        from tb_role r, tb_user u
+        where r.id = #{id} and r.parent = u.id
     </select>
     <select id="query" parameterType="Role" resultMap="role">
-        select <include refid="roleColumn"></include>
-        from tb_role
+        select <include refid="roleUserColumn"></include>
+        from tb_role r,tb_user u
         <where>
+            r.parent = u.id
             <if test="id != null">
-                and id = #{id}
+                and r.id = #{id}
             </if>
             <if test="name != null and name != ''">
-                and name = #{name}
+                and r.name = #{name}
             </if>
             <if test="parentId != null">
-                and parent = #{parentId}
+                and r.parent = #{parentId}
             </if>
         </where>
         <if test="order != null and order != ''">
             order by ${order}
         </if>
-        <if test="page != null">
+        <if test="page != null and offset != null">
             limit #{page} ,#{offset}
         </if>
     </select>

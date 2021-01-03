@@ -14,7 +14,9 @@ public class Role implements Comparable<Role>{
     private Integer id;
     private String name;
     private Date createTime;
-    private String parentId;
+    private Integer parentId;
+    private User parent;
+
     //对商品的操作权限
     private Boolean productInsert;
     private Boolean productDelete;

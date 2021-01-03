@@ -18,34 +18,45 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
 
+    /**
+     * 添加角色
+     * */
     @RequestMapping("/add")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result addRole(@RequestBody Role role, HttpServletRequest request) {
+    public Result addRole(Role role, Principal principal) {
         //System.out.println(role);
         try {
-            return roleService.addRole(role,request);
+            return roleService.addRole(principal, role);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 删除角色
+     * */
     @RequestMapping("/delete")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result deleteRole(@RequestBody Role role,HttpServletRequest request) {
+    public Result deleteRole(Role role, Principal principal) {
         //System.out.println(role);
         try {
-            return roleService.deleteRole(role,request);
+            return roleService.deleteRole(principal, role);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);
         }
     }
+
+    /**
+     * 修改角色
+     * */
     @RequestMapping("/edit")
     //@CrossOrigin(origins = {"*"},allowCredentials = "true")
-    public Result editRole(@RequestBody Role role,HttpServletRequest request) {
+    public Result editRole(Role role, Principal principal) {
         //System.out.println(role);
         try {
-            return roleService.editRole(role,request);
+            return roleService.editRole(principal, role);
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(3,"服务器异常",null,null);

@@ -96,6 +96,10 @@ function goToUser() {
     return user.role.userSelect == true;
 }
 
+function goToRole() {
+    return user.role.roleSelect == true;
+}
+
 function dateFormat(fmt, date) {
     let ret;
     const opt = {
