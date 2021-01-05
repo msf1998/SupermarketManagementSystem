@@ -48,15 +48,38 @@ public class RoleService {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
 
+        //如果该角色拥有商品的删除、添加、修改权限，那么也应该有商品查询权限
+        if (role.getProductUpdate() || role.getProductDelete() || role.getProductInsert()) {
+            role.setProductSelect(true);
+        }
+        //倘如角色拥有商品管理相关权限，那也应该有类型查询相关权限
+        if (role.getProductSelect()) {
+            role.setTypeSelect(true);
+        }
+        if (role.getTypeInsert() || role.getTypeDelete() || role.getTypeUpdate()) {
+            role.setTypeSelect(true);
+        }
+        if (role.getMemberInsert() || role.getMemberDelete() || role.getMemberUpdate()) {
+            role.setMemberSelect(true);
+        }
+        if (role.getOrderInsert() || role.getOrderDelete() || role.getOrderUpdate()) {
+            role.setOrderSelect(true);
+        }
+        //如果该角色拥有员工的删除、添加、修改权限，那么也应该有员工查询权限
+        if (role.getUserInsert() || role.getUserDelete() || role.getUserUpdate()) {
+            role.setUserSelect(true);
+        }
+        //倘如角色拥有员工管理相关权限，那也应该有角色查询相关权限
+        if (role.getUserSelect()) {
+            role.setRoleSelect(true);
+        }
+        if (role.getRoleInsert() || role.getRoleDelete() || role.getOrderUpdate()) {
+            role.setRoleSelect(true);
+        }
+
         //插入
         role.setCreateTime(new Date());
         role.setParentId(user.getId());
-        if (role.getProductInsert()) {
-            role.setTypeSelect(true);
-        }
-        if (role.getUserInsert()) {
-            role.setRoleSelect(true);
-        }
         int res = roleMapper.add(role);
         if (res == 1) {
             return new Result(1,"添加成功",null,null);
@@ -128,10 +151,36 @@ public class RoleService {
         }
 
 
-        if (role.getProductInsert()) {
+        if (role.getId() == 1 || role.getId() == 2) {
+            return new Result(2,"不能修改默认角色",null,null);
+        }
+
+        //如果该角色拥有商品的删除、添加、修改权限，那么也应该有商品查询权限
+        if (role.getProductUpdate() || role.getProductDelete() || role.getProductInsert()) {
+            role.setProductSelect(true);
+        }
+        //倘如角色拥有商品管理相关权限，那也应该有类型查询相关权限
+        if (role.getProductSelect()) {
             role.setTypeSelect(true);
         }
-        if (role.getUserInsert()) {
+        if (role.getTypeInsert() || role.getTypeDelete() || role.getTypeUpdate()) {
+            role.setTypeSelect(true);
+        }
+        if (role.getMemberInsert() || role.getMemberDelete() || role.getMemberUpdate()) {
+            role.setMemberSelect(true);
+        }
+        if (role.getOrderInsert() || role.getOrderDelete() || role.getOrderUpdate()) {
+            role.setOrderSelect(true);
+        }
+        //如果该角色拥有员工的删除、添加、修改权限，那么也应该有员工查询权限
+        if (role.getUserInsert() || role.getUserDelete() || role.getUserUpdate()) {
+            role.setUserSelect(true);
+        }
+        //倘如角色拥有员工管理相关权限，那也应该有角色查询相关权限
+        if (role.getUserSelect()) {
+            role.setRoleSelect(true);
+        }
+        if (role.getRoleInsert() || role.getRoleDelete() || role.getOrderUpdate()) {
             role.setRoleSelect(true);
         }
 
@@ -209,6 +258,8 @@ public class RoleService {
                         && role.getRoleDelete() == null && role.getRoleUpdate() == null && role.getRoleSelect() == null) {
                     return new Result(2,"修改参数有误",null,null);
                 }
+                role.setCreateTime(null);
+                role.setParentId(null);
                 break;
             }
         }
