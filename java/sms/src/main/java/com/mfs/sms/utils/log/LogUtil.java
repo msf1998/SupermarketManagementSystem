@@ -3,6 +3,7 @@ package com.mfs.sms.utils.log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Date;
@@ -26,6 +27,10 @@ public class LogUtil {
                         break;
                         default:
                             try {
+                                File file = new File(location);
+                                if (!file.exists()) {
+                                    file.createNewFile();
+                                }
                                 printStream = new PrintStream(new FileOutputStream(location));
                             } catch (Exception e) {
                                 e.printStackTrace();
