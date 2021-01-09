@@ -1,6 +1,7 @@
 package com.mfs.sms.security;
 
 import com.mfs.sms.pojo.User;
+import com.mfs.sms.utils.log.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,24 +20,18 @@ import java.util.Date;
 public class RedisLogoutHandler implements LogoutHandler {
     @Autowired
     private RedisTemplate redisTemplate;
-    @Value("${custom.log.enabled}")
-    private boolean log;
+    @Autowired
+    private LogUtil logUtil;
     private static final LogoutHandler instance = new RedisLogoutHandler();
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         try {
             Boolean deleted = redisTemplate.delete("login.user." + authentication.getName());
             //日志打印
-            if (log) {
-                if (deleted != null) {
-                    System.out.println(new Date().toLocaleString() + "  " + "CUSTOM" + "    " + "mfs"
-                            + "   " + "---" + "   " + this.getClass().getName() + "   " + ":" + " " +
-                            "清除Redis缓存：login." + authentication.getName() + "失败");
-                } else {
-                    System.out.println(new Date().toLocaleString() + "  " + "CUSTOM" + "    " + "mfs"
-                            + "   " + "---" + "   " + this.getClass().getName() + "   " + ":" + " " +
-                            "清除Redis缓存：login." + authentication.getName() + "成功" );
-                }
+            if (!deleted) {
+                logUtil.log("清除Redis缓存：login." + authentication.getName() + "失败",this.getClass());
+            } else {
+                logUtil.log("清除Redis缓存：login." + authentication.getName() + "成功",this.getClass());
             }
         } catch (Exception e) {
             e.printStackTrace();

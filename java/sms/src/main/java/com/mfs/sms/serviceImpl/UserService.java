@@ -66,7 +66,7 @@ public class UserService {
         if (role == null) {
             return new Result(2,"角色不存在",null,null);
         }
-        if (role.compareTo(user1.getRole()) == 1) {
+        if (role.compareTo(user1.getRole()) > 0) {
             return new Result(2,"授予权限过高",null,null);
         }
 
@@ -163,6 +163,19 @@ public class UserService {
             return new Result(5,"抱歉,您没有该权限",null,null);
         }
 
+        User user2 =  new User();
+        user2.setId(user.getId());
+        List<User> query = userMapper.query(user2);
+        if (query == null || query.size() < 1) {
+            return new Result(2,"用户不存在",null,null);
+        }
+        user2 = query.get(0);
+        if (user2.getRole().compareTo(user1.getRole()) > 0) {
+            return new Result(2,"您无权修改此用户",null,null);
+        }
+        if (user.getRoleId() != null && roleMapper.queryById(user.getRoleId()).compareTo(user1.getRole()) > 0) {
+            return new Result(2,"授予权限过高",null,null);
+        }
         //修改数据库
         int res = userMapper.update(user);
         if (res == 1) {

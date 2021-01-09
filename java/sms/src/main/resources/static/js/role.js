@@ -150,7 +150,7 @@ function editRole(id) {
     $("#edit-add-memberSelect-input").attr("checked",role[i].memberSelect)
     $("#edit-add-orderInsert-input").attr("checked",role[i].orderInsert)
     $("#edit-add-orderDelete-input").attr("checked",role[i].orderDelete)
-    $("#edit-add-orderUpdate-input").attr("checked",role[i],orderUpdate)
+    $("#edit-add-orderUpdate-input").attr("checked",role[i].orderUpdate)
     $("#edit-add-orderSelect-input").attr("checked",role[i].orderSelect)
     $("#edit-add-userInsert-input").attr("checked",role[i].userInsert)
     $("#edit-add-userDelete-input").attr("checked",role[i].userDelete)

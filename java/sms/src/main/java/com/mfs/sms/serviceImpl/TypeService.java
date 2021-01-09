@@ -160,7 +160,7 @@ public class TypeService {
             type.setPage(type.getPage() * 10);
         }
         List<Type> list = typeMapper.query(type);
-        System.out.println(list);
+
         return new Result(1,"查询成功",list,null);
     }
 

@@ -571,7 +571,7 @@ public class ProductService {
         //鉴权
         String username = principal.getName();
         User user = userService.quicklyGetUserByUsername(username);
-        if (user == null) {
+        if (user == null) { 
             return new Result(4,"用户不存在",null,null);
         }
         if (!user.getRole().getProductSelect()) {

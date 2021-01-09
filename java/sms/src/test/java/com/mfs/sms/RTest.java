@@ -1,11 +1,19 @@
 package com.mfs.sms;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.ToString;
+import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpMessage;
+import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.converter.HttpMessageConverter;
 
 import javax.print.attribute.standard.Finishings;
 import java.io.File;
@@ -28,11 +36,12 @@ public class RTest {
         Object he = ops.get("he");
         Test map = new CollectionClassMapObjectUtil().map((Map<?, ?>) he, Test.class);
         System.out.println(map);*/
-        System.out.println("hello.php");
+        ObjectMapper mapper = new ObjectMapper();
     }
 
     public static void main(String[] args) {
-        System.out.println("012321321".matches("[0-9]{1,10}"));
+        System.out.println(System.getenv("path"));
+        System.out.println(System.getProperty("mfs"));
     }
 }
 

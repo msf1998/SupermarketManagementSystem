@@ -434,7 +434,7 @@
                                                    class="member-id form-control">
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                            <button type="button" id="pay-close" class="btn btn-default" data-dismiss="modal">
                                                 关闭
                                             </button>
                                             <button type="button" class="btn btn-primary" onclick="pay()">
@@ -571,6 +571,7 @@
                 screenShot();
             } else {
                 getProductById(imgMsg,1)
+                alert("添加成功");
                 screenShot();
             }
         }

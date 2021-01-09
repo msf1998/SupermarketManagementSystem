@@ -18,7 +18,7 @@ public class Order {
     private Date createTime;
     private String creatorId;
     private Member creator;
-    private String parentId;
+    private Integer parentId;
     private User parent;
 
     private String order;

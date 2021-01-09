@@ -154,6 +154,7 @@ function defaultFormDataAjaxRequest(data,url) {
         dataType: "json",
         data: data,
         success: function (response) {
+            $("#pay-close").click()
             alert(response.describe)
         }
     })

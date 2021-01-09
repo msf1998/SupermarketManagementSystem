@@ -114,7 +114,7 @@ public class OrderService {
         if (saleTo.getSale() == true) {   //商品销售
             //创建订单
             Order order = new Order(null,"商品销售",sum,new Date(), member.getId()
-                    ,null,username,null,null,null);
+                    ,null,user.getId(),null,null,null);
             int res = orderMapper.addAndReturnId(order);
             if (res != 1) {
                 throw new DatabaseUpdateException("创建订单失败");
@@ -144,7 +144,7 @@ public class OrderService {
             }
             if (sum <= member.getScore()) {
                 //创建订单
-                Order order = new Order(null,"积分兑换",sum,new Date(), member.getId(),null,username,null,null,null);
+                Order order = new Order(null,"积分兑换",sum,new Date(), member.getId(),null,user.getId(),null,null,null);
                 int res = orderMapper.addAndReturnId(order);
                 if (res != 1) {
                     throw new DatabaseUpdateException("创建订单失败");
@@ -270,15 +270,15 @@ public class OrderService {
             case "createOrder" : {
                 SaleTo saleTo = (SaleTo)object;
                 if (saleTo.getMemberId() != null) {
-                    if (!saleTo.getMemberId().matches("[0 - 9]{11}")) {
+                    if (!saleTo.getMemberId().matches("\\d{11}")) {
                         return new Result(2,"会员id必须是11位手机号",null,null);
                     }
                 }
                 if (saleTo.getSale() == null) {
                     return new Result(2,"未指定业务场景",null,null);
                 }
-                if (saleTo.getProductId() == null || saleTo.getCount() == null || saleTo.getProductId().length == 1 ||
-                        saleTo.getCount().length == 1 || saleTo.getProductId().length != saleTo.getCount().length) {
+                if (saleTo.getProductId() == null || saleTo.getCount() == null || saleTo.getProductId().length == 0 ||
+                        saleTo.getCount().length == 0 || saleTo.getProductId().length != saleTo.getCount().length) {
                     return new Result(2,"产品参数有误",null,null);
                 }
                 return null;
